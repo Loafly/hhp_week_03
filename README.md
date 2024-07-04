@@ -82,10 +82,17 @@ sequenceDiagram
     participant 사용자
     participant API
     participant 토큰
+    participant 유저
+    participant 유저DB as 유저 DB
     participant 토큰DB as 토큰 DB
 
     사용자 ->> API: 토큰 발급 요청
     API ->> 토큰: 토큰 발급 요청
+
+    토큰 ->> 유저: 유저 조회
+    유저 ->> 유저DB: 유저 조회
+    유저DB -->> 유저: 유저 조회 결과
+    유저 -->> 사용자: 유효하지 않은 사용자
 
     토큰 ->> 토큰: 토큰 객체 생성
     토큰 ->> 토큰DB: 토큰 데이터 생성
