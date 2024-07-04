@@ -56,7 +56,7 @@ class TokenController {
             content = [Content(mediaType = "application/json", schema = Schema(implementation = TokenDto.TokenInfoResponse::class))]
         ),
         ApiResponse(
-            responseCode = "400", description = "요청 데이터가 잘못된 경우",
+            responseCode = "404", description = "요청 데이터가 잘못된 경우",
             content = [Content(
                 mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class),
                 examples = [
