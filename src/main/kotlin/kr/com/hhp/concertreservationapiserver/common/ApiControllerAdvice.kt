@@ -1,5 +1,6 @@
 package kr.com.hhp.concertreservationapiserver.common
 
+import kr.com.hhp.concertreservationapiserver.token.application.exception.TokenNotFoundException
 import kr.com.hhp.concertreservationapiserver.user.application.exception.UserIdMisMatchException
 import kr.com.hhp.concertreservationapiserver.user.application.exception.UserNotFoundException
 import kr.com.hhp.concertreservationapiserver.wallet.application.exception.InvalidChargeAmountException
@@ -28,7 +29,8 @@ class ApiControllerAdvice : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(value = [
         WalletNotFoundException::class,
-        UserNotFoundException::class
+        UserNotFoundException::class,
+        TokenNotFoundException::class
     ])
     fun handleCustomNotFoundExceptions(e: Exception): ResponseEntity<ErrorResponse> {
 
