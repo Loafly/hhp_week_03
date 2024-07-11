@@ -287,3 +287,5 @@ sequenceDiagram
 ```
 </details>
 
+## ERD 설계
+- 링크 : https://dbdiagram.io/d/콘서트-예약-6684e7659939893daee5ee0f
