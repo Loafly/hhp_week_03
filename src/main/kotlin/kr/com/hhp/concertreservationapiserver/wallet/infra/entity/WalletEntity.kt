@@ -1,0 +1,34 @@
+package kr.com.hhp.concertreservationapiserver.wallet.infra.entity
+
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import kr.com.hhp.concertreservationapiserver.user.application.exception.UserIdMisMatchException
+
+@Entity
+@Table(name = "wallet")
+class WalletEntity (
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var walletId: Long? = null,
+
+    @Column(name = "user_id", nullable = false, unique = true)
+    var userId: Long,
+
+    @Column(name = "balance", nullable = false)
+    var balance: Int = 0,
+) {
+    fun updateBalance(amount: Int) {
+        balance += amount
+    }
+
+    fun throwExceptionIfMisMatchUserId(userId: Long) {
+        if(userId != this.userId) {
+            throw UserIdMisMatchException("유저Id가 일치하지 않습니다. userId : ${userId}, wallet.userId : ${this.userId}")
+        }
+    }
+}
