@@ -7,20 +7,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import kr.com.hhp.concertreservationapiserver.common.ErrorResponse
-import kr.com.hhp.concertreservationapiserver.token.application.exception.TokenNotFoundException
-import kr.com.hhp.concertreservationapiserver.user.application.exception.UserNotFoundException
+import kr.com.hhp.concertreservationapiserver.token.application.TokenFacade
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.*
 
 @RestController
 @RequestMapping("/api/tokens")
 @Tag(name = "Token")
-class TokenController {
+class TokenController(private val tokenFacade: TokenFacade) {
 
     @ApiResponses(value = [
         ApiResponse(
@@ -33,7 +31,7 @@ class TokenController {
             content = [Content(
                 mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class),
                 examples = [
-                    ExampleObject(name = "유저가 없는경우 (userId <= 0)", value = "{ \"message\" : \"유저가 존재하지 않습니다. userId : 0\"}")
+                    ExampleObject(name = "유저가 없는경우", value = "{ \"message\" : \"유저가 존재하지 않습니다. userId : 0\"}")
                 ]
             )]
         ),
@@ -41,13 +39,7 @@ class TokenController {
     @PostMapping
     fun createToken(@RequestBody request: TokenDto.PostRequest): TokenDto.TokenResponse {
 
-        if(request.userId <= 0) {
-            throw UserNotFoundException("유저가 존재하지 않습니다. userId : ${request.userId}")
-        }
-
-        val token = UUID.randomUUID().toString()
-
-        return TokenDto.TokenResponse(token)
+        return tokenFacade.createToken(userId = request.userId)
     }
 
     @ApiResponses(value = [
@@ -68,14 +60,6 @@ class TokenController {
     @GetMapping
     fun getTokenInfo(@RequestHeader(name = "token") token: String): TokenDto.TokenInfoResponse {
 
-        if(token == "token") {
-            throw TokenNotFoundException("토큰이 존재하지 않습니다. token : $token")
-        }
-
-        return TokenDto.TokenInfoResponse(
-            1L,
-            "Waiting",
-            1L
-        )
+        return tokenFacade.getTokenInfo(token)
     }
 }
