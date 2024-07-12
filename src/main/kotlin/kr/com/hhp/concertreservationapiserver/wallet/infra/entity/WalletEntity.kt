@@ -25,10 +25,4 @@ class WalletEntity (
     fun updateBalance(amount: Int) {
         balance += amount
     }
-
-    fun throwExceptionIfMisMatchUserId(userId: Long) {
-        if(userId != this.userId) {
-            throw UserIdMisMatchException("유저Id가 일치하지 않습니다. userId : ${userId}, wallet.userId : ${this.userId}")
-        }
-    }
 }

@@ -38,7 +38,7 @@ class WalletHistoryServiceTest {
             given(walletHistoryRepository.save(any())).willReturn(expectedWalletHistory)
 
             //when
-            val walletHistory = walletHistoryService.save(walletId = walletId, amount = amount, balance = balance)
+            val walletHistory = walletHistoryService.create(walletId = walletId, amount = amount, balance = balance)
 
             //then
             then(walletHistoryRepository).should().save(any())

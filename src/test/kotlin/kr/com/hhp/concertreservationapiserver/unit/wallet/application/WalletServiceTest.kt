@@ -67,6 +67,44 @@ class WalletServiceTest {
     }
 
     @Nested
+    @DisplayName("지갑 조회(userId)")
+    inner class GetByUserIdTest {
+        @Test
+        fun `성공 (정상 케이스)`() {
+            // given
+            val walletId = 1L
+            val userId = 1L
+            val expectedWallet = WalletEntity(walletId = walletId, userId = userId)
+            given(walletRepository.findByUserId(userId)).willReturn(expectedWallet)
+
+            // when
+            val wallet = walletService.getByUserId(userId)
+
+            // then
+            then(walletRepository).should().findByUserId(userId)
+            assertEquals(expectedWallet.walletId, wallet.walletId)
+            assertEquals(expectedWallet.userId, wallet.userId)
+            assertEquals(expectedWallet.balance, wallet.balance)
+        }
+
+        @Test
+        fun `실패 (사용자가 존재하지 않는 경우)`() {
+            // given
+            val userId = 1L
+            given(walletRepository.findByUserId(userId)).willReturn(null)
+
+            // when
+            val exception = assertThrows<WalletNotFoundException> {
+                walletService.getByUserId(userId)
+            }
+
+            // then
+            then(walletRepository).should().findByUserId(userId)
+            assertEquals("Wallet이 존재하지 않습니다. userId : $userId", exception.message)
+        }
+    }
+
+    @Nested
     @DisplayName("잔액 충전")
     inner class ChargeTest {
 

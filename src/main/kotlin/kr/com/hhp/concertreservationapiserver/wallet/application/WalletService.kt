@@ -1,5 +1,6 @@
 package kr.com.hhp.concertreservationapiserver.wallet.application
 
+import kr.com.hhp.concertreservationapiserver.user.application.exception.UserIdMisMatchException
 import kr.com.hhp.concertreservationapiserver.wallet.application.exception.InvalidChargeAmountException
 import kr.com.hhp.concertreservationapiserver.wallet.application.exception.WalletNotFoundException
 import kr.com.hhp.concertreservationapiserver.wallet.domain.WalletRepository
@@ -14,15 +15,32 @@ class WalletService(private val walletRepository: WalletRepository) {
             ?: throw WalletNotFoundException("Wallet이 존재하지 않습니다. walletId : $walletId")
     }
 
+    fun getByUserId(userId: Long): WalletEntity {
+        return walletRepository.findByUserId(userId)
+            ?: throw WalletNotFoundException("Wallet이 존재하지 않습니다. userId : $userId")
+    }
+
     fun charge(walletId: Long, userId: Long, amount:Int): WalletEntity {
         val wallet = getByWalletId(walletId)
-        wallet.throwExceptionIfMisMatchUserId(userId)
+        throwExceptionIfMisMatchUserId(wallet, userId)
 
         if(amount < 0) {
             throw InvalidChargeAmountException("충전 금액은 양수여야 합니다. amount : $amount")
         }
 
         wallet.updateBalance(amount)
+        return walletRepository.save(wallet)
+    }
+
+    fun throwExceptionIfMisMatchUserId(wallet: WalletEntity, userId: Long) {
+        if(userId != wallet.userId) {
+            throw UserIdMisMatchException("유저Id가 일치하지 않습니다. userId : ${userId}, wallet.userId : ${wallet.userId}")
+        }
+    }
+
+    fun useBalance(userId: Long, amount: Int): WalletEntity {
+        val wallet = getByUserId(userId)
+        wallet.updateBalance(-amount)
         return walletRepository.save(wallet)
     }
 }
