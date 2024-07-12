@@ -2,6 +2,7 @@ package kr.com.hhp.concertreservationapiserver.unit.token.application
 
 import kr.com.hhp.concertreservationapiserver.token.application.TokenQueueService
 import kr.com.hhp.concertreservationapiserver.token.application.exception.TokenNotFoundException
+import kr.com.hhp.concertreservationapiserver.token.application.exception.TokenStatusIsNotProgressException
 import kr.com.hhp.concertreservationapiserver.token.domain.TokenQueueRepository
 import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueEntity
 import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueStatus
@@ -376,6 +377,33 @@ class TokenQueueServiceTest {
             //then
             then(tokenQueueRepository).should().saveAll(any())
             assertEquals(expectedUpdatingStatusPTokenQueues.size, updatedTokenQueues.size)
+        }
+    }
+
+    @Nested
+    @DisplayName("토큰 시간이 만료되었는지 확인 후 만료된 경우 업데이트")
+    inner class ThrowExceptionIfStatusIsNotInProgressTest {
+
+        @Test
+        fun `성공 (토큰상태가 InProgress인 정상 케이스)`() {
+            //given
+            val tokenQueue = TokenQueueEntity(userId = 1L, status = TokenQueueStatus.P)
+
+            //when
+            tokenQueueService.throwExceptionIfStatusIsNotInProgress(tokenQueue)
+        }
+
+        @Test
+        fun `실패 (토큰상태가 InProgress가 아닌 케이스)`() {
+            //given
+            val tokenQueue = TokenQueueEntity(userId = 1L, status = TokenQueueStatus.W)
+
+            //when
+            val exception = assertThrows<TokenStatusIsNotProgressException> {
+                tokenQueueService.throwExceptionIfStatusIsNotInProgress(tokenQueue)
+            }
+
+            assertEquals("토큰 상태가 'InProgress'가 아닙니다.", exception.message)
         }
     }
 }

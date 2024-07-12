@@ -1,6 +1,7 @@
 package kr.com.hhp.concertreservationapiserver.token.application
 
 import kr.com.hhp.concertreservationapiserver.token.application.exception.TokenNotFoundException
+import kr.com.hhp.concertreservationapiserver.token.application.exception.TokenStatusIsNotProgressException
 import kr.com.hhp.concertreservationapiserver.token.domain.TokenQueueRepository
 import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueEntity
 import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueStatus
@@ -92,5 +93,11 @@ class TokenQueueService (private val tokenQueueRepository: TokenQueueRepository)
         }
 
         return saveAll(expiringTokens)
+    }
+
+    fun throwExceptionIfStatusIsNotInProgress(tokenQueue: TokenQueueEntity){
+        if(tokenQueue.status != TokenQueueStatus.P) {
+            throw TokenStatusIsNotProgressException("토큰 상태가 'InProgress'가 아닙니다.")
+        }
     }
 }
