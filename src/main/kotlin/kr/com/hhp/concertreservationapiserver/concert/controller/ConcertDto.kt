@@ -13,15 +13,14 @@ class ConcertDto {
     )
 
     data class SeatResponse (
-        val concertSeatId:  Long,
-        val seatNumber: Long,
-        val price: Long,
+        val concertSeatId: Long,
+        val seatNumber: Int,
+        val price: Int,
         val reservationStatus: String
     )
 
     data class ReservationSeatRequest (
         val concertSeatId: Long,
-        val userId: Long,
     )
 
 }

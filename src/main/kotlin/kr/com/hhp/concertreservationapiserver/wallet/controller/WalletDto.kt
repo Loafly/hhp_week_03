@@ -5,11 +5,11 @@ class WalletDto {
     data class BalanceResponse (
         val walletId:Long,
         val userId:Long,
-        val balance:Long
+        val balance:Int
     )
 
     data class BalancePatchRequest (
-        val userId:Long,
-        val amount: Long,
+        val userId: Long,
+        val amount: Int,
     )
 }
