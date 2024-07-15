@@ -1,5 +1,3 @@
-package kr.com.hhp.concertreservationapiserver.concert.controller
-
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
@@ -8,15 +6,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import kr.com.hhp.concertreservationapiserver.common.ErrorResponse
-import kr.com.hhp.concertreservationapiserver.concert.application.exception.ConcertDetailNotFoundException
-import kr.com.hhp.concertreservationapiserver.concert.application.exception.ConcertNotFoundException
-import kr.com.hhp.concertreservationapiserver.concert.application.exception.ConcertReservationPeriodException
-import kr.com.hhp.concertreservationapiserver.concert.application.exception.ConcertSeatAlreadyReservedException
-import kr.com.hhp.concertreservationapiserver.concert.application.exception.ConcertSeatIsNotTemporaryStatusException
-import kr.com.hhp.concertreservationapiserver.concert.application.exception.ConcertSeatNotFoundException
-import kr.com.hhp.concertreservationapiserver.token.application.exception.TokenNotFoundException
-import kr.com.hhp.concertreservationapiserver.token.application.exception.TokenStatusIsNotProgressException
-import kr.com.hhp.concertreservationapiserver.user.application.exception.UserIdMisMatchException
+import kr.com.hhp.concertreservationapiserver.concert.application.ConcertFacade
+import kr.com.hhp.concertreservationapiserver.concert.controller.ConcertDto
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -30,7 +21,9 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/api/concerts")
 @Tag(name = "Concert")
-class ConcertController {
+class ConcertController(
+    private val concertFacade: ConcertFacade
+) {
 
     @ApiResponses(value = [
         ApiResponse(
@@ -64,30 +57,12 @@ class ConcertController {
                          @RequestHeader(name = "token") token: String,
                          @RequestParam(name = "reservationDateTime") reservationDateTime: LocalDateTime): List<ConcertDto.DetailResponse> {
 
-        if(token == "token") {
-            throw TokenNotFoundException("토큰이 존재하지 않습니다. token : $token")
-        }
-
-        if(token == "notInProgressToken") {
-            throw TokenStatusIsNotProgressException("토큰 상태가 올바르지 않습니다.")
-        }
-
-        if(concertId <= 0) {
-            throw ConcertNotFoundException("콘서트가 존재하지 않습니다. concertId : $concertId")
-        }
-
-        return listOf(
-            ConcertDto.DetailResponse(
-                1L,
-                50,
-                50,
-                LocalDateTime.now().minusDays(10),
-                LocalDateTime.now().plusDays(10),
-                )
+        return concertFacade.getAllAvailableReservationDetail(
+            token = token,
+            concertId = concertId,
+            reservationDateTime = reservationDateTime
         )
     }
-
-
 
     @ApiResponses(value = [
         ApiResponse(
@@ -114,39 +89,14 @@ class ConcertController {
                 ]
             )]
         ),
-
     ])
 
     @GetMapping("/details/{concertDetailId}/seats")
     fun getConcertSeat(@PathVariable("concertDetailId") concertDetailId: Long,
-                       @RequestHeader(name = "token") token: String,
-                       @RequestParam(name = "reservationDateTime") reservationDateTime: LocalDateTime): List<ConcertDto.SeatResponse> {
+                       @RequestHeader(name = "token") token: String): List<ConcertDto.SeatResponse> {
 
-        if(token == "token") {
-            throw TokenNotFoundException("토큰이 존재하지 않습니다. token : $token")
-        }
-
-        if(token == "notInProgressToken") {
-            throw TokenStatusIsNotProgressException("토큰 상태가 올바르지 않습니다.")
-        }
-
-        if(concertDetailId <= 0) {
-            throw ConcertDetailNotFoundException("콘서트 상세가 존재하지 않습니다. concertDetailId : $concertDetailId")
-        }
-
-        return listOf(
-            ConcertDto.SeatResponse(
-                1L,
-                50,
-                50000,
-                "Available"
-                )
-        )
+        return concertFacade.getAllAvailableReservationSeat(token = token, concertDetailId = concertDetailId)
     }
-
-
-
-
 
     @ApiResponses(value = [
         ApiResponse(
@@ -184,37 +134,10 @@ class ConcertController {
         @RequestHeader(name = "token") token: String,
         @RequestBody request: ConcertDto.ReservationSeatRequest
     ): ConcertDto.SeatResponse {
-        if(token == "token") {
-            throw TokenNotFoundException("토큰이 존재하지 않습니다. token : $token")
-        }
-
-        if(token == "notInProgressToken") {
-            throw TokenStatusIsNotProgressException("토큰 상태가 올바르지 않습니다.")
-        }
-
-        if(request.concertSeatId <= 0) {
-            throw ConcertSeatNotFoundException("콘서트 좌석이 존재하지 않습니다. concertSeatId : ${request.concertSeatId}")
-        }
-
-        if(request.concertSeatId == 10L) {
-            throw ConcertReservationPeriodException("콘서트 예매 기간이 아닙니다.")
-        }
-
-        if(request.concertSeatId == 100L) {
-            throw ConcertSeatAlreadyReservedException("이미 예약된 좌석입니다.")
-        }
-
-        if(request.concertSeatId != request.userId) {
-            throw UserIdMisMatchException("유저Id가 일치하지 않습니다. userId : ${request.userId}, concertSeatId.userId : ${request.concertSeatId}")
-        }
-
-        return ConcertDto.SeatResponse(
-                request.concertSeatId,
-                1,
-                50000,
-                "Temporary"
-            )
-
+        return concertFacade.reserveSeatToTemporary(
+            token = token,
+            concertSeatId = request.concertSeatId
+        )
     }
 
 
@@ -253,24 +176,9 @@ class ConcertController {
         @RequestHeader(name = "token") token: String,
         @PathVariable("concertSeatId") concertSeatId: Long,
     ) {
-        if(token == "token") {
-            throw TokenNotFoundException("토큰이 존재하지 않습니다. token : $token")
-        }
-
-        if(token == "notInProgressToken") {
-            throw TokenStatusIsNotProgressException("토큰 상태가 올바르지 않습니다.")
-        }
-
-        if(concertSeatId <= 0) {
-            throw ConcertSeatNotFoundException("콘서트 좌석이 존재하지 않습니다. concertSeatId : ${concertSeatId}")
-        }
-
-        if(concertSeatId == 10L) {
-            throw ConcertSeatIsNotTemporaryStatusException("임시 예약된 좌석이 아닙니다.")
-        }
-
-        if(concertSeatId == 100L) {
-            throw UserIdMisMatchException("유저Id가 일치하지 않습니다. userId : ???, concertSeatId.userId : ???")
-        }
+        concertFacade.payForTemporaryReservedSeatToConfirmedReservation(
+            token = token,
+            concertSeatId = concertSeatId,
+        )
     }
 }
