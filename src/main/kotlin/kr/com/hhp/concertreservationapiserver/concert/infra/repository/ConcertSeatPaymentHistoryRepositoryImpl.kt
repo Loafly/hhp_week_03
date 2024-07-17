@@ -1,6 +1,6 @@
 package kr.com.hhp.concertreservationapiserver.concert.infra.repository
 
-import kr.com.hhp.concertreservationapiserver.concert.domain.ConcertSeatPaymentHistoryRepository
+import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertSeatPaymentHistoryRepository
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertSeatPaymentHistoryEntity
 import kr.com.hhp.concertreservationapiserver.concert.infra.repository.jpa.ConcertSeatPaymentHistoryJpaRepository
 import org.springframework.stereotype.Repository

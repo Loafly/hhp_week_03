@@ -1,6 +1,6 @@
 package kr.com.hhp.concertreservationapiserver.concert.infra.repository
 
-import kr.com.hhp.concertreservationapiserver.concert.domain.ConcertSeatRepository
+import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertSeatRepository
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertReservationStatus
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertSeatEntity
 import kr.com.hhp.concertreservationapiserver.concert.infra.repository.jpa.ConcertSeatJpaRepository

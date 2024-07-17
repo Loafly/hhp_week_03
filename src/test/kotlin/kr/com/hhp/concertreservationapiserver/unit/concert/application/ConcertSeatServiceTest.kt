@@ -1,13 +1,13 @@
 package kr.com.hhp.concertreservationapiserver.unit.concert.application
 
-import kr.com.hhp.concertreservationapiserver.concert.application.ConcertSeatService
-import kr.com.hhp.concertreservationapiserver.concert.application.exception.ConcertSeatAlreadyReservedException
-import kr.com.hhp.concertreservationapiserver.concert.application.exception.ConcertSeatIsNotTemporaryStatusException
-import kr.com.hhp.concertreservationapiserver.concert.application.exception.ConcertSeatNotFoundException
-import kr.com.hhp.concertreservationapiserver.concert.domain.ConcertSeatRepository
+import kr.com.hhp.concertreservationapiserver.concert.domain.service.ConcertSeatService
+import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertSeatAlreadyReservedException
+import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertSeatIsNotTemporaryStatusException
+import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertSeatNotFoundException
+import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertSeatRepository
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertReservationStatus
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertSeatEntity
-import kr.com.hhp.concertreservationapiserver.user.application.exception.UserIdMisMatchException
+import kr.com.hhp.concertreservationapiserver.user.domain.exception.UserIdMisMatchException
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

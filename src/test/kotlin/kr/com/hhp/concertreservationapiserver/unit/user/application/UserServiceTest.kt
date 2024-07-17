@@ -1,8 +1,8 @@
 package kr.com.hhp.concertreservationapiserver.unit.user.application
 
-import kr.com.hhp.concertreservationapiserver.user.application.UserService
-import kr.com.hhp.concertreservationapiserver.user.application.exception.UserNotFoundException
-import kr.com.hhp.concertreservationapiserver.user.domain.UserRepository
+import kr.com.hhp.concertreservationapiserver.user.domain.service.UserService
+import kr.com.hhp.concertreservationapiserver.user.domain.exception.UserNotFoundException
+import kr.com.hhp.concertreservationapiserver.user.domain.repository.UserRepository
 import kr.com.hhp.concertreservationapiserver.user.infra.entity.UserEntity
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName

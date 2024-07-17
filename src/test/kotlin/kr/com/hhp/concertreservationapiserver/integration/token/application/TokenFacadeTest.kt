@@ -1,9 +1,9 @@
 package kr.com.hhp.concertreservationapiserver.integration.token.application
 
 import kr.com.hhp.concertreservationapiserver.token.application.TokenFacade
-import kr.com.hhp.concertreservationapiserver.token.domain.TokenQueueRepository
+import kr.com.hhp.concertreservationapiserver.token.domain.repository.TokenQueueRepository
 import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueEntity
-import kr.com.hhp.concertreservationapiserver.user.domain.UserRepository
+import kr.com.hhp.concertreservationapiserver.user.domain.repository.UserRepository
 import kr.com.hhp.concertreservationapiserver.user.infra.entity.UserEntity
 import org.junit.jupiter.api.Test
 

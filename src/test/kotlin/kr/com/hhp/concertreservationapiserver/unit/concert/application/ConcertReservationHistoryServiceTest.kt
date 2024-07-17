@@ -1,7 +1,7 @@
 package kr.com.hhp.concertreservationapiserver.unit.concert.application
 
-import kr.com.hhp.concertreservationapiserver.concert.application.ConcertReservationHistoryService
-import kr.com.hhp.concertreservationapiserver.concert.domain.ConcertReservationHistoryRepository
+import kr.com.hhp.concertreservationapiserver.concert.domain.service.ConcertReservationHistoryService
+import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertReservationHistoryRepository
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertReservationHistoryEntity
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertReservationStatus
 import org.junit.jupiter.api.Test

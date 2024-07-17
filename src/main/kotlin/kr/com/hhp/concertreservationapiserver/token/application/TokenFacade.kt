@@ -2,12 +2,14 @@ package kr.com.hhp.concertreservationapiserver.token.application
 
 import kr.com.hhp.concertreservationapiserver.common.annotation.Facade
 import kr.com.hhp.concertreservationapiserver.token.controller.TokenDto
-import kr.com.hhp.concertreservationapiserver.user.application.UserService
+import kr.com.hhp.concertreservationapiserver.token.domain.service.TokenQueueService
+import kr.com.hhp.concertreservationapiserver.user.domain.service.UserService
 import org.springframework.transaction.annotation.Transactional
 
 @Facade
 class TokenFacade(private val userService: UserService,
-                  private val tokenQueueService: TokenQueueService) {
+                  private val tokenQueueService: TokenQueueService
+) {
 
     // 토큰 발급
     @Transactional

@@ -1,8 +1,8 @@
 package kr.com.hhp.concertreservationapiserver.unit.concert.application
 
-import kr.com.hhp.concertreservationapiserver.concert.application.ConcertDetailService
-import kr.com.hhp.concertreservationapiserver.concert.application.exception.ConcertDetailNotFoundException
-import kr.com.hhp.concertreservationapiserver.concert.domain.ConcertDetailRepository
+import kr.com.hhp.concertreservationapiserver.concert.domain.service.ConcertDetailService
+import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertDetailNotFoundException
+import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertDetailRepository
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertDetailEntity
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested

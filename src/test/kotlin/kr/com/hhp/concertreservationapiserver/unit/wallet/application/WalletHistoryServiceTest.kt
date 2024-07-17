@@ -1,7 +1,7 @@
 package kr.com.hhp.concertreservationapiserver.unit.wallet.application
 
-import kr.com.hhp.concertreservationapiserver.wallet.application.WalletHistoryService
-import kr.com.hhp.concertreservationapiserver.wallet.domain.WalletHistoryRepository
+import kr.com.hhp.concertreservationapiserver.wallet.domain.service.WalletHistoryService
+import kr.com.hhp.concertreservationapiserver.wallet.domain.repository.WalletHistoryRepository
 import kr.com.hhp.concertreservationapiserver.wallet.infra.entity.WalletHistoryEntity
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName

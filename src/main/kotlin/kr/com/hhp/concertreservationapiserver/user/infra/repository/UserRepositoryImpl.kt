@@ -1,6 +1,6 @@
 package kr.com.hhp.concertreservationapiserver.user.infra.repository
 
-import kr.com.hhp.concertreservationapiserver.user.domain.UserRepository
+import kr.com.hhp.concertreservationapiserver.user.domain.repository.UserRepository
 import kr.com.hhp.concertreservationapiserver.user.infra.entity.UserEntity
 import kr.com.hhp.concertreservationapiserver.user.infra.repository.jpa.UserJpaRepository
 import org.springframework.stereotype.Repository

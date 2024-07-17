@@ -1,9 +1,9 @@
 package kr.com.hhp.concertreservationapiserver.integration.wallet.application
 
-import kr.com.hhp.concertreservationapiserver.user.domain.UserRepository
+import kr.com.hhp.concertreservationapiserver.user.domain.repository.UserRepository
 import kr.com.hhp.concertreservationapiserver.user.infra.entity.UserEntity
 import kr.com.hhp.concertreservationapiserver.wallet.application.WalletFacade
-import kr.com.hhp.concertreservationapiserver.wallet.domain.WalletRepository
+import kr.com.hhp.concertreservationapiserver.wallet.domain.repository.WalletRepository
 import kr.com.hhp.concertreservationapiserver.wallet.infra.entity.WalletEntity
 import org.junit.jupiter.api.Test
 

@@ -1,10 +1,10 @@
 package kr.com.hhp.concertreservationapiserver.unit.wallet.application
 
-import kr.com.hhp.concertreservationapiserver.user.application.exception.UserIdMisMatchException
-import kr.com.hhp.concertreservationapiserver.wallet.application.WalletService
-import kr.com.hhp.concertreservationapiserver.wallet.application.exception.InvalidChargeAmountException
-import kr.com.hhp.concertreservationapiserver.wallet.application.exception.WalletNotFoundException
-import kr.com.hhp.concertreservationapiserver.wallet.domain.WalletRepository
+import kr.com.hhp.concertreservationapiserver.user.domain.exception.UserIdMisMatchException
+import kr.com.hhp.concertreservationapiserver.wallet.domain.service.WalletService
+import kr.com.hhp.concertreservationapiserver.wallet.domain.exception.InvalidChargeAmountException
+import kr.com.hhp.concertreservationapiserver.wallet.domain.exception.WalletNotFoundException
+import kr.com.hhp.concertreservationapiserver.wallet.domain.repository.WalletRepository
 import kr.com.hhp.concertreservationapiserver.wallet.infra.entity.WalletEntity
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName

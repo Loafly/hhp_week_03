@@ -1,8 +1,10 @@
 package kr.com.hhp.concertreservationapiserver.wallet.application
 
 import kr.com.hhp.concertreservationapiserver.common.annotation.Facade
-import kr.com.hhp.concertreservationapiserver.user.application.UserService
+import kr.com.hhp.concertreservationapiserver.user.domain.service.UserService
 import kr.com.hhp.concertreservationapiserver.wallet.controller.WalletDto
+import kr.com.hhp.concertreservationapiserver.wallet.domain.service.WalletHistoryService
+import kr.com.hhp.concertreservationapiserver.wallet.domain.service.WalletService
 import org.springframework.transaction.annotation.Transactional
 
 @Facade

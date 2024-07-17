@@ -1,19 +1,19 @@
 package kr.com.hhp.concertreservationapiserver.integration.concert.application
 
 import kr.com.hhp.concertreservationapiserver.concert.application.ConcertFacade
-import kr.com.hhp.concertreservationapiserver.concert.domain.ConcertDetailRepository
-import kr.com.hhp.concertreservationapiserver.concert.domain.ConcertRepository
-import kr.com.hhp.concertreservationapiserver.concert.domain.ConcertSeatRepository
+import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertDetailRepository
+import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertRepository
+import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertSeatRepository
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertDetailEntity
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertEntity
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertReservationStatus
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertSeatEntity
-import kr.com.hhp.concertreservationapiserver.token.domain.TokenQueueRepository
+import kr.com.hhp.concertreservationapiserver.token.domain.repository.TokenQueueRepository
 import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueEntity
 import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueStatus
-import kr.com.hhp.concertreservationapiserver.user.domain.UserRepository
+import kr.com.hhp.concertreservationapiserver.user.domain.repository.UserRepository
 import kr.com.hhp.concertreservationapiserver.user.infra.entity.UserEntity
-import kr.com.hhp.concertreservationapiserver.wallet.domain.WalletRepository
+import kr.com.hhp.concertreservationapiserver.wallet.domain.repository.WalletRepository
 import kr.com.hhp.concertreservationapiserver.wallet.infra.entity.WalletEntity
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -73,8 +73,6 @@ class ConcertFacadeTest {
         assertEquals(concertDetail.concertId, reservationDetail.concertId)
         assertEquals(concertDetail.reservationStartDateTime, reservationDetail.reservationStartDateTime)
         assertEquals(concertDetail.reservationEndDateTime, reservationDetail.reservationEndDateTime)
-
-
     }
 
     @Test

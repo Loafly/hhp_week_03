@@ -1,9 +1,9 @@
 package kr.com.hhp.concertreservationapiserver.unit.token.application
 
-import kr.com.hhp.concertreservationapiserver.token.application.TokenQueueService
-import kr.com.hhp.concertreservationapiserver.token.application.exception.TokenNotFoundException
-import kr.com.hhp.concertreservationapiserver.token.application.exception.TokenStatusIsNotProgressException
-import kr.com.hhp.concertreservationapiserver.token.domain.TokenQueueRepository
+import kr.com.hhp.concertreservationapiserver.token.domain.service.TokenQueueService
+import kr.com.hhp.concertreservationapiserver.token.domain.exception.TokenNotFoundException
+import kr.com.hhp.concertreservationapiserver.token.domain.exception.TokenStatusIsNotProgressException
+import kr.com.hhp.concertreservationapiserver.token.domain.repository.TokenQueueRepository
 import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueEntity
 import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueStatus
 import org.junit.jupiter.api.DisplayName

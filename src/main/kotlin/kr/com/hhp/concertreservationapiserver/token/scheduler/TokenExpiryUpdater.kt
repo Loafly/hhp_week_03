@@ -1,6 +1,6 @@
 package kr.com.hhp.concertreservationapiserver.token.scheduler
 
-import kr.com.hhp.concertreservationapiserver.token.application.TokenQueueService
+import kr.com.hhp.concertreservationapiserver.token.domain.service.TokenQueueService
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional

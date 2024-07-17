@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import kr.com.hhp.concertreservationapiserver.user.application.exception.UserIdMisMatchException
+import kr.com.hhp.concertreservationapiserver.user.domain.exception.UserIdMisMatchException
 
 @Entity
 @Table(name = "wallet")
