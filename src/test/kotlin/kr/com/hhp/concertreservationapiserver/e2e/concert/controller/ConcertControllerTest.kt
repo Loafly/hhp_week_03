@@ -106,7 +106,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isNotFound)
-                .andExpect(jsonPath("$.message").value("토큰이 존재하지 않습니다. token : $invalidToken"))
+                .andExpect(jsonPath("$.message").value(ErrorCode.TOKEN_NOT_FOUND.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.TOKEN_NOT_FOUND.code))
         }
 
         @Test
@@ -123,7 +124,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value("Token 이 Null 입니다."))
+                .andExpect(jsonPath("$.message").value(ErrorCode.TOKEN_IS_NULL.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.TOKEN_IS_NULL.code))
         }
 
         @Test
@@ -144,7 +146,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value("토큰 상태가 'InProgress'가 아닙니다."))
+                .andExpect(jsonPath("$.message").value(ErrorCode.TOKEN_STATUS_IS_NOT_PROGRESS.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.TOKEN_STATUS_IS_NOT_PROGRESS.code))
         }
 
         @Test
@@ -237,7 +240,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isNotFound)
-                .andExpect(jsonPath("$.message").value("토큰이 존재하지 않습니다. token : $invalidToken"))
+                .andExpect(jsonPath("$.message").value(ErrorCode.TOKEN_NOT_FOUND.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.TOKEN_NOT_FOUND.code))
         }
 
         @Test
@@ -262,7 +266,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value("Token 이 Null 입니다."))
+                .andExpect(jsonPath("$.message").value(ErrorCode.TOKEN_IS_NULL.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.TOKEN_IS_NULL.code))
         }
 
         @Test
@@ -290,7 +295,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value("토큰 상태가 'InProgress'가 아닙니다."))
+                .andExpect(jsonPath("$.message").value(ErrorCode.TOKEN_STATUS_IS_NOT_PROGRESS.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.TOKEN_STATUS_IS_NOT_PROGRESS.code))
         }
 
         @Test
@@ -391,7 +397,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isNotFound)
-                .andExpect(jsonPath("$.message").value("토큰이 존재하지 않습니다. token : $invalidToken"))
+                .andExpect(jsonPath("$.message").value(ErrorCode.TOKEN_NOT_FOUND.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.TOKEN_NOT_FOUND.code))
         }
 
         @Test
@@ -425,7 +432,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value("Token 이 Null 입니다."))
+                .andExpect(jsonPath("$.message").value(ErrorCode.TOKEN_IS_NULL.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.TOKEN_IS_NULL.code))
         }
 
         @Test
@@ -461,7 +469,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value("토큰 상태가 'InProgress'가 아닙니다."))
+                .andExpect(jsonPath("$.message").value(ErrorCode.TOKEN_STATUS_IS_NOT_PROGRESS.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.TOKEN_STATUS_IS_NOT_PROGRESS.code))
         }
 
         @Test
@@ -674,7 +683,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isNotFound)
-                .andExpect(jsonPath("$.message").value("토큰이 존재하지 않습니다. token : $invalidToken"))
+                .andExpect(jsonPath("$.message").value(ErrorCode.TOKEN_NOT_FOUND.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.TOKEN_NOT_FOUND.code))
         }
 
         @Test
@@ -708,7 +718,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value("Token 이 Null 입니다."))
+                .andExpect(jsonPath("$.message").value(ErrorCode.TOKEN_IS_NULL.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.TOKEN_IS_NULL.code))
         }
 
         @Test
@@ -744,7 +755,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value("토큰 상태가 'InProgress'가 아닙니다."))
+                .andExpect(jsonPath("$.message").value(ErrorCode.TOKEN_STATUS_IS_NOT_PROGRESS.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.TOKEN_STATUS_IS_NOT_PROGRESS.code))
         }
 
         @Test

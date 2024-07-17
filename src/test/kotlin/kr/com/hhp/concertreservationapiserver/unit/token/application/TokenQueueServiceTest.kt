@@ -1,9 +1,9 @@
 package kr.com.hhp.concertreservationapiserver.unit.token.application
 
-import kr.com.hhp.concertreservationapiserver.token.domain.service.TokenQueueService
-import kr.com.hhp.concertreservationapiserver.token.domain.exception.TokenNotFoundException
-import kr.com.hhp.concertreservationapiserver.token.domain.exception.TokenStatusIsNotProgressException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.token.domain.repository.TokenQueueRepository
+import kr.com.hhp.concertreservationapiserver.token.domain.service.TokenQueueService
 import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueEntity
 import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueStatus
 import org.junit.jupiter.api.DisplayName
@@ -18,7 +18,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.given
 import org.mockito.kotlin.then
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -79,13 +79,14 @@ class TokenQueueServiceTest {
             given(tokenQueueRepository.findByToken(token)).willReturn(null)
 
             //when
-            val exception = assertThrows<TokenNotFoundException> {
+            val exception = assertThrows<CustomException> {
                 tokenQueueService.getByToken(token)
             }
 
             //then
             then(tokenQueueRepository).should().findByToken(token)
-            assertEquals("토큰이 존재하지 않습니다. token : $token", exception.message)
+            assertEquals(ErrorCode.TOKEN_NOT_FOUND.message, exception.message)
+            assertEquals(ErrorCode.TOKEN_NOT_FOUND.code, exception.code)
         }
     }
 
@@ -399,11 +400,12 @@ class TokenQueueServiceTest {
             val tokenQueue = TokenQueueEntity(userId = 1L, status = TokenQueueStatus.W)
 
             //when
-            val exception = assertThrows<TokenStatusIsNotProgressException> {
+            val exception = assertThrows<CustomException> {
                 tokenQueueService.throwExceptionIfStatusIsNotInProgress(tokenQueue)
             }
 
-            assertEquals("토큰 상태가 'InProgress'가 아닙니다.", exception.message)
+            assertEquals(ErrorCode.TOKEN_STATUS_IS_NOT_PROGRESS.message, exception.message)
+            assertEquals(ErrorCode.TOKEN_STATUS_IS_NOT_PROGRESS.code, exception.code)
         }
     }
 }

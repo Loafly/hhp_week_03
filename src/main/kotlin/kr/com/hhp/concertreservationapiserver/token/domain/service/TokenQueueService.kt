@@ -1,7 +1,7 @@
 package kr.com.hhp.concertreservationapiserver.token.domain.service
 
-import kr.com.hhp.concertreservationapiserver.token.domain.exception.TokenNotFoundException
-import kr.com.hhp.concertreservationapiserver.token.domain.exception.TokenStatusIsNotProgressException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.token.domain.repository.TokenQueueRepository
 import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueEntity
 import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueStatus
@@ -17,7 +17,7 @@ class TokenQueueService (private val tokenQueueRepository: TokenQueueRepository)
 
     fun getByToken(token: String): TokenQueueEntity {
         return tokenQueueRepository.findByToken(token)
-            ?: throw TokenNotFoundException("토큰이 존재하지 않습니다. token : $token")
+            ?: throw CustomException(ErrorCode.TOKEN_NOT_FOUND)
     }
 
     fun getNullAbleFirstWaitingTokenQueue(): TokenQueueEntity? {
@@ -97,7 +97,7 @@ class TokenQueueService (private val tokenQueueRepository: TokenQueueRepository)
 
     fun throwExceptionIfStatusIsNotInProgress(tokenQueue: TokenQueueEntity){
         if(!tokenQueue.isStatusInProgress()) {
-            throw TokenStatusIsNotProgressException("토큰 상태가 'InProgress'가 아닙니다.")
+            throw CustomException(ErrorCode.TOKEN_STATUS_IS_NOT_PROGRESS)
         }
     }
 }
