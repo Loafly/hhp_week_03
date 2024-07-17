@@ -1,12 +1,10 @@
 package kr.com.hhp.concertreservationapiserver.concert.domain.service
 
-import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertSeatAlreadyReservedException
-import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertSeatIsNotTemporaryStatusException
-import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertSeatNotFoundException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertSeatRepository
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertReservationStatus
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertSeatEntity
-import kr.com.hhp.concertreservationapiserver.user.domain.exception.UserIdMisMatchException
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -22,13 +20,7 @@ class ConcertSeatService(private val concertSeatRepository : ConcertSeatReposito
 
     fun getByConcertSeatId(concertSeatId: Long): ConcertSeatEntity {
         return concertSeatRepository.findByConcertSeatId(concertSeatId)
-            ?: throw ConcertSeatNotFoundException("ConcertSeat이 존재하지 않습니다. concertSeatId : $concertSeatId")
-    }
-
-    fun throwExceptionIfStatusIsNotTemporary(concertSeatEntity: ConcertSeatEntity){
-        if(concertSeatEntity.reservationStatus != ConcertReservationStatus.T) {
-            throw ConcertSeatIsNotTemporaryStatusException("임시 예약된 좌석이 아닙니다.")
-        }
+            ?: throw CustomException(ErrorCode.CONCERT_SEAT_NOT_FOUND)
     }
 
     fun payForTemporaryReservedSeatToConfirmedReserved(concertSeatId: Long, userId: Long): ConcertSeatEntity {
@@ -47,15 +39,21 @@ class ConcertSeatService(private val concertSeatRepository : ConcertSeatReposito
         return concertSeatRepository.save(concertSeat)
     }
 
-    fun throwExceptionIfStatusIsNotAvailable(concertSeat: ConcertSeatEntity){
-        if(concertSeat.reservationStatus != ConcertReservationStatus.A) {
-            throw ConcertSeatAlreadyReservedException("이미 예약된 좌석입니다.")
+    private fun throwExceptionIfStatusIsNotTemporary(concertSeatEntity: ConcertSeatEntity){
+        if(concertSeatEntity.reservationStatus != ConcertReservationStatus.T) {
+            throw CustomException(ErrorCode.CONCERT_SEAT_IS_NOT_TEMPORARY_STATUS)
         }
     }
 
-    fun throwExceptionIfMisMatchUserId(concertSeat: ConcertSeatEntity, userId: Long){
+    private fun throwExceptionIfStatusIsNotAvailable(concertSeat: ConcertSeatEntity){
+        if(concertSeat.reservationStatus != ConcertReservationStatus.A) {
+            throw CustomException(ErrorCode.CONCERT_SEAT_ALREADY_RESERVED)
+        }
+    }
+
+    private fun throwExceptionIfMisMatchUserId(concertSeat: ConcertSeatEntity, userId: Long){
         if(concertSeat.userId != userId) {
-            throw UserIdMisMatchException("유저Id가 일치하지 않습니다. userId : ${userId}, concertSeatId.userId : ${concertSeat.userId}")
+            throw CustomException(ErrorCode.CONCERT_USER_ID_IS_MIS_MATCH)
         }
     }
 

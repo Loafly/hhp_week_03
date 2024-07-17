@@ -1,5 +1,6 @@
 package kr.com.hhp.concertreservationapiserver.e2e.concert.controller
 
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertDetailRepository
 import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertRepository
 import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertSeatRepository
@@ -163,7 +164,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isNotFound)
-                .andExpect(jsonPath("$.message").value("Concert가 존재하지 않습니다. concertId : $concertId"))
+                .andExpect(jsonPath("$.message").value(ErrorCode.CONCERT_NOT_FOUND.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.CONCERT_NOT_FOUND.code))
         }
     }
 
@@ -308,7 +310,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isNotFound)
-                .andExpect(jsonPath("$.message").value("콘서트 상세가 존재하지 않습니다. concertDetailId : $concertDetailId"))
+                .andExpect(jsonPath("$.message").value(ErrorCode.CONCERT_DETAIL_NOT_FOUND.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.CONCERT_DETAIL_NOT_FOUND.code))
         }
     }
 
@@ -494,7 +497,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value("예약 시작 시간이 아닙니다."))
+                .andExpect(jsonPath("$.message").value(ErrorCode.CONCERT_RESERVATION_PERIOD_EARLY.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.CONCERT_RESERVATION_PERIOD_EARLY.code))
         }
 
         @Test
@@ -530,7 +534,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value("예약 시작 시간이 아닙니다."))
+                .andExpect(jsonPath("$.message").value(ErrorCode.CONCERT_RESERVATION_PERIOD_LATE.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.CONCERT_RESERVATION_PERIOD_LATE.code))
         }
 
         @Test
@@ -567,7 +572,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value("이미 예약된 좌석입니다."))
+                .andExpect(jsonPath("$.message").value(ErrorCode.CONCERT_SEAT_ALREADY_RESERVED.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.CONCERT_SEAT_ALREADY_RESERVED.code))
         }
 
         @Test
@@ -585,7 +591,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isNotFound)
-                .andExpect(jsonPath("$.message").value("ConcertSeat이 존재하지 않습니다. concertSeatId : $concertSeatId"))
+                .andExpect(jsonPath("$.message").value(ErrorCode.CONCERT_SEAT_NOT_FOUND.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.CONCERT_SEAT_NOT_FOUND.code))
         }
     }
 
@@ -780,7 +787,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value("임시 예약된 좌석이 아닙니다."))
+                .andExpect(jsonPath("$.message").value(ErrorCode.CONCERT_SEAT_IS_NOT_TEMPORARY_STATUS.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.CONCERT_SEAT_IS_NOT_TEMPORARY_STATUS.code))
         }
 
         @Test
@@ -824,7 +832,8 @@ class ConcertControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value("유저Id가 일치하지 않습니다. userId : ${user.userId}, concertSeatId.userId : ${concertUser.userId}"))
+                .andExpect(jsonPath("$.message").value(ErrorCode.CONCERT_USER_ID_IS_MIS_MATCH.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.CONCERT_USER_ID_IS_MIS_MATCH.code))
         }
     }
 
