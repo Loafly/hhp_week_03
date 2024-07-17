@@ -66,6 +66,10 @@ class ConcertFacade(
     fun reserveSeatToTemporary(token: String, concertSeatId: Long): ConcertDto.SeatResponse {
         val tokenQueue = tokenQueueService.getByToken(token)
 
+        val concertSeat = concertSeatService.getByConcertSeatId(concertSeatId)
+        val concertDetail = concertDetailService.getByConcertDetailId(concertSeat.concertDetailId)
+        concertDetailService.throwExceptionIfNotReservationPeriod(concertDetail)
+
         val updatedConcertSeat = concertSeatService.reserveSeatToTemporary(
             concertSeatId = concertSeatId,
             userId = tokenQueue.userId

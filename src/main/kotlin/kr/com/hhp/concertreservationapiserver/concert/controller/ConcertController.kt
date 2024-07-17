@@ -77,7 +77,6 @@ class ConcertController(private val concertFacade: ConcertFacade) {
                 examples = [
                     ExampleObject(name = "토큰이 InProgress 상태가 아닌 경우 (token == notInProgressToken)", value = "{ \"message\" : \"토큰 상태가 올바르지 않습니다.\"}"),
                 ]
-
             )]
         ),
         ApiResponse(
@@ -113,7 +112,6 @@ class ConcertController(private val concertFacade: ConcertFacade) {
                     ExampleObject(name = "토큰이 InProgress 상태가 아닌 경우 (token == notInProgressToken)", value = "{ \"message\" : \"토큰 상태가 올바르지 않습니다.\"}"),
                     ExampleObject(name = "콘서트 예매기간이 아닌 경우 (concertSeatId == 10)", value = "{ \"message\" : \"콘서트 예매 기간이 아닙니다.\"}"),
                     ExampleObject(name = "좌석이 이미 예약된 경우 (concertSeatId == 100)", value = "{ \"message\" : \"이미 예약된 좌석입니다.\"}"),
-                    ExampleObject(name = "concertSeat 의 userId와 일치하지 않는 경우 (concertSeatId != userId)", value = "{ \"message\" : \"유저Id가 일치하지 않습니다. userId : 1, concertSeatId.userId : 2\"}"),
                 ]
             )]
         ),
@@ -132,14 +130,14 @@ class ConcertController(private val concertFacade: ConcertFacade) {
     ])
 
     @RequiredInProgressToken
-    @PostMapping("/details/seats/reservation")
+    @PostMapping("/details/seats/{concertSeatId}/reservation")
     fun reservationSeat(
         @RequestHeader(name = "token") token: String,
-        @RequestBody request: ConcertDto.ReservationSeatRequest
+        @PathVariable("concertSeatId") concertSeatId: Long,
     ): ConcertDto.SeatResponse {
         return concertFacade.reserveSeatToTemporary(
             token = token,
-            concertSeatId = request.concertSeatId
+            concertSeatId = concertSeatId
         )
     }
 
