@@ -68,4 +68,8 @@ class TokenQueueEntity (
     fun updateToInProgress() {
         status = TokenQueueStatus.P
     }
+
+    fun isStatusInProgress(): Boolean {
+        return this.status == TokenQueueStatus.P
+    }
 }

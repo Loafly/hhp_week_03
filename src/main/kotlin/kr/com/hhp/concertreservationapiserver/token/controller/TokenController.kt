@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import kr.com.hhp.concertreservationapiserver.common.ErrorResponse
+import kr.com.hhp.concertreservationapiserver.common.annotation.RequiredToken
 import kr.com.hhp.concertreservationapiserver.token.application.TokenFacade
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -57,6 +58,7 @@ class TokenController(private val tokenFacade: TokenFacade) {
             )]
         ),
     ])
+    @RequiredToken
     @GetMapping
     fun getTokenInfo(@RequestHeader(name = "token") token: String): TokenDto.TokenInfoResponse {
 

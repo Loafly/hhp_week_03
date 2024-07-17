@@ -1,3 +1,5 @@
+package kr.com.hhp.concertreservationapiserver.concert.controller
+
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
@@ -6,8 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import kr.com.hhp.concertreservationapiserver.common.ErrorResponse
+import kr.com.hhp.concertreservationapiserver.common.annotation.RequiredInProgressToken
 import kr.com.hhp.concertreservationapiserver.concert.application.ConcertFacade
-import kr.com.hhp.concertreservationapiserver.concert.controller.ConcertDto
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -21,9 +23,7 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/api/concerts")
 @Tag(name = "Concert")
-class ConcertController(
-    private val concertFacade: ConcertFacade
-) {
+class ConcertController(private val concertFacade: ConcertFacade) {
 
     @ApiResponses(value = [
         ApiResponse(
@@ -52,6 +52,7 @@ class ConcertController(
 
     ])
 
+    @RequiredInProgressToken
     @GetMapping("/{concertId}/details")
     fun getConcertDetail(@PathVariable("concertId") concertId: Long,
                          @RequestHeader(name = "token") token: String,
@@ -91,6 +92,7 @@ class ConcertController(
         ),
     ])
 
+    @RequiredInProgressToken
     @GetMapping("/details/{concertDetailId}/seats")
     fun getConcertSeat(@PathVariable("concertDetailId") concertDetailId: Long,
                        @RequestHeader(name = "token") token: String): List<ConcertDto.SeatResponse> {
@@ -129,6 +131,7 @@ class ConcertController(
 
     ])
 
+    @RequiredInProgressToken
     @PostMapping("/details/seats/reservation")
     fun reservationSeat(
         @RequestHeader(name = "token") token: String,
@@ -170,7 +173,7 @@ class ConcertController(
         ),
 
     ])
-
+    @RequiredInProgressToken
     @PostMapping("/details/seats/{concertSeatId}/payment")
     fun paymentSeat(
         @RequestHeader(name = "token") token: String,

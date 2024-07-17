@@ -96,7 +96,7 @@ class TokenQueueService (private val tokenQueueRepository: TokenQueueRepository)
     }
 
     fun throwExceptionIfStatusIsNotInProgress(tokenQueue: TokenQueueEntity){
-        if(tokenQueue.status != TokenQueueStatus.P) {
+        if(!tokenQueue.isStatusInProgress()) {
             throw TokenStatusIsNotProgressException("토큰 상태가 'InProgress'가 아닙니다.")
         }
     }

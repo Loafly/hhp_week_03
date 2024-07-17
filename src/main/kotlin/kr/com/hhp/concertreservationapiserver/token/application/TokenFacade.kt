@@ -2,6 +2,7 @@ package kr.com.hhp.concertreservationapiserver.token.application
 
 import kr.com.hhp.concertreservationapiserver.common.annotation.Facade
 import kr.com.hhp.concertreservationapiserver.token.controller.TokenDto
+import kr.com.hhp.concertreservationapiserver.token.domain.exception.TokenIsNullException
 import kr.com.hhp.concertreservationapiserver.token.domain.service.TokenQueueService
 import kr.com.hhp.concertreservationapiserver.user.domain.service.UserService
 import org.springframework.transaction.annotation.Transactional
@@ -32,5 +33,27 @@ class TokenFacade(private val userService: UserService,
             status = tokenQueue.status.toString(),
             remainingNumber = remainingNumber
         )
+    }
+
+    // 토큰 유효성 검사
+    @Transactional(readOnly = true)
+    fun verifyToken(token: String?) {
+        // 토큰 유효성 검사 로직
+        if(token == null) {
+            throw TokenIsNullException("Token 이 Null 입니다.")
+        }
+
+        tokenQueueService.getByToken(token)
+    }
+
+    @Transactional(readOnly = true)
+    fun verifyTokenIsInProgress(token: String?) {
+        // 토큰 유효성 검사 로직
+        if(token == null) {
+            throw TokenIsNullException("Token 이 Null 입니다.")
+        }
+
+        val tokenQueue = tokenQueueService.getByToken(token)
+        tokenQueueService.throwExceptionIfStatusIsNotInProgress(tokenQueue)
     }
 }

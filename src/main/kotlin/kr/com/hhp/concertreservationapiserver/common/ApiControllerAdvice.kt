@@ -6,6 +6,7 @@ import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertRe
 import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertSeatAlreadyReservedException
 import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertSeatIsNotTemporaryStatusException
 import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertSeatNotFoundException
+import kr.com.hhp.concertreservationapiserver.token.domain.exception.TokenIsNullException
 import kr.com.hhp.concertreservationapiserver.token.domain.exception.TokenNotFoundException
 import kr.com.hhp.concertreservationapiserver.token.domain.exception.TokenStatusIsNotProgressException
 import kr.com.hhp.concertreservationapiserver.user.domain.exception.UserIdMisMatchException
@@ -29,7 +30,8 @@ class ApiControllerAdvice : ResponseEntityExceptionHandler() {
         TokenStatusIsNotProgressException::class,
         ConcertReservationPeriodException::class,
         ConcertSeatAlreadyReservedException::class,
-        ConcertSeatIsNotTemporaryStatusException::class
+        ConcertSeatIsNotTemporaryStatusException::class,
+        TokenIsNullException::class
     ])
     fun handleCustomBadRequestExceptions(e: Exception): ResponseEntity<ErrorResponse> {
 
