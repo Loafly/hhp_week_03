@@ -37,5 +37,9 @@ enum class ErrorCode(val httpStatus: HttpStatus, val code: String, val message: 
     WALLET_USER_ID_IS_MIS_MATCH(HttpStatus.BAD_REQUEST, "W-B-0002", "지갑 주인이 아닙니다."),
 
         //404
-    WALLET_NOT_FOUND(HttpStatus.NOT_FOUND, "W-N-0001", "지갑이 존재하지 않습니다.")
+    WALLET_NOT_FOUND(HttpStatus.NOT_FOUND, "W-N-0001", "지갑이 존재하지 않습니다.");
+
+    override fun toString(): String {
+        return this.message
+    }
 }
