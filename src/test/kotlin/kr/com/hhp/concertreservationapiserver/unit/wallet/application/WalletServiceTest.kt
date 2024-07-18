@@ -1,10 +1,9 @@
 package kr.com.hhp.concertreservationapiserver.unit.wallet.application
 
-import kr.com.hhp.concertreservationapiserver.user.domain.exception.UserIdMisMatchException
-import kr.com.hhp.concertreservationapiserver.wallet.domain.service.WalletService
-import kr.com.hhp.concertreservationapiserver.wallet.domain.exception.InvalidChargeAmountException
-import kr.com.hhp.concertreservationapiserver.wallet.domain.exception.WalletNotFoundException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.wallet.domain.repository.WalletRepository
+import kr.com.hhp.concertreservationapiserver.wallet.domain.service.WalletService
 import kr.com.hhp.concertreservationapiserver.wallet.infra.entity.WalletEntity
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
@@ -56,13 +55,14 @@ class WalletServiceTest {
             given(walletRepository.findByWalletId(walletId)).willReturn(null)
 
             // when
-            val exception = assertThrows<WalletNotFoundException> {
+            val exception = assertThrows<CustomException> {
                 walletService.getByWalletId(walletId)
             }
 
             // then
             then(walletRepository).should().findByWalletId(walletId)
-            assertEquals("Wallet이 존재하지 않습니다. walletId : $walletId", exception.message)
+            assertEquals(ErrorCode.WALLET_NOT_FOUND.message, exception.message)
+            assertEquals(ErrorCode.WALLET_NOT_FOUND.code, exception.code)
         }
     }
 
@@ -94,13 +94,14 @@ class WalletServiceTest {
             given(walletRepository.findByUserId(userId)).willReturn(null)
 
             // when
-            val exception = assertThrows<WalletNotFoundException> {
+            val exception = assertThrows<CustomException> {
                 walletService.getByUserId(userId)
             }
 
             // then
             then(walletRepository).should().findByUserId(userId)
-            assertEquals("Wallet이 존재하지 않습니다. userId : $userId", exception.message)
+            assertEquals(ErrorCode.WALLET_NOT_FOUND.message, exception.message)
+            assertEquals(ErrorCode.WALLET_NOT_FOUND.code, exception.code)
         }
     }
 
@@ -147,7 +148,7 @@ class WalletServiceTest {
             given(walletRepository.findByWalletId(walletId)).willReturn(initialWallet)
 
             //when
-            val exception = assertThrows<UserIdMisMatchException> {
+            val exception = assertThrows<CustomException> {
                 walletService.charge(
                     walletId = walletId,
                     userId = userId,
@@ -157,7 +158,8 @@ class WalletServiceTest {
 
             //then
             then(walletRepository).should().findByWalletId(walletId)
-            assertEquals("유저Id가 일치하지 않습니다. userId : $userId, wallet.userId : $walletUserId", exception.message)
+            assertEquals(ErrorCode.WALLET_USER_ID_IS_MIS_MATCH.message, exception.message)
+            assertEquals(ErrorCode.WALLET_USER_ID_IS_MIS_MATCH.code, exception.code)
         }
 
         @Test
@@ -171,7 +173,7 @@ class WalletServiceTest {
             given(walletRepository.findByWalletId(walletId)).willReturn(initialWallet)
 
             //when
-            val exception = assertThrows<InvalidChargeAmountException> {
+            val exception = assertThrows<CustomException> {
                 walletService.charge(
                     walletId = walletId,
                     userId = userId,
@@ -181,7 +183,8 @@ class WalletServiceTest {
 
             //then
             then(walletRepository).should().findByWalletId(walletId)
-            assertEquals("충전 금액은 양수여야 합니다. amount : $amount", exception.message)
+            assertEquals(ErrorCode.WALLET_INVALID_CHARGE_AMOUNT.message, exception.message)
+            assertEquals(ErrorCode.WALLET_INVALID_CHARGE_AMOUNT.code, exception.code)
         }
     }
 }

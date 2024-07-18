@@ -1,8 +1,7 @@
 package kr.com.hhp.concertreservationapiserver.wallet.domain.service
 
-import kr.com.hhp.concertreservationapiserver.user.domain.exception.UserIdMisMatchException
-import kr.com.hhp.concertreservationapiserver.wallet.domain.exception.InvalidChargeAmountException
-import kr.com.hhp.concertreservationapiserver.wallet.domain.exception.WalletNotFoundException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.wallet.domain.repository.WalletRepository
 import kr.com.hhp.concertreservationapiserver.wallet.infra.entity.WalletEntity
 import org.springframework.stereotype.Service
@@ -12,12 +11,12 @@ class WalletService(private val walletRepository: WalletRepository) {
 
     fun getByWalletId(walletId: Long): WalletEntity {
         return walletRepository.findByWalletId(walletId)
-            ?: throw WalletNotFoundException("Wallet이 존재하지 않습니다. walletId : $walletId")
+            ?: throw CustomException(ErrorCode.WALLET_NOT_FOUND)
     }
 
     fun getByUserId(userId: Long): WalletEntity {
         return walletRepository.findByUserId(userId)
-            ?: throw WalletNotFoundException("Wallet이 존재하지 않습니다. userId : $userId")
+            ?: throw CustomException(ErrorCode.WALLET_NOT_FOUND)
     }
 
     fun charge(walletId: Long, userId: Long, amount:Int): WalletEntity {
@@ -25,7 +24,7 @@ class WalletService(private val walletRepository: WalletRepository) {
         throwExceptionIfMisMatchUserId(wallet, userId)
 
         if(amount < 0) {
-            throw InvalidChargeAmountException("충전 금액은 양수여야 합니다. amount : $amount")
+            throw CustomException(ErrorCode.WALLET_INVALID_CHARGE_AMOUNT)
         }
 
         wallet.updateBalance(amount)
@@ -34,7 +33,7 @@ class WalletService(private val walletRepository: WalletRepository) {
 
     fun throwExceptionIfMisMatchUserId(wallet: WalletEntity, userId: Long) {
         if(userId != wallet.userId) {
-            throw UserIdMisMatchException("유저Id가 일치하지 않습니다. userId : ${userId}, wallet.userId : ${wallet.userId}")
+            throw CustomException(ErrorCode.WALLET_USER_ID_IS_MIS_MATCH)
         }
     }
 

@@ -26,4 +26,16 @@ enum class ErrorCode(val httpStatus: HttpStatus, val code: String, val message: 
         //404
     TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "T-N-0001", "토큰이 존재하지 않습니다."),
 
+    // 사용자
+        //404
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U-N-0001", "사용자가 존재하지 않습니다."),
+
+
+    // 지갑
+        //400
+    WALLET_INVALID_CHARGE_AMOUNT(HttpStatus.BAD_REQUEST, "W-B-0001", "충전 금액은 양수여야 합니다."),
+    WALLET_USER_ID_IS_MIS_MATCH(HttpStatus.BAD_REQUEST, "W-B-0002", "지갑 주인이 아닙니다."),
+
+        //404
+    WALLET_NOT_FOUND(HttpStatus.NOT_FOUND, "W-N-0001", "지갑이 존재하지 않습니다.")
 }

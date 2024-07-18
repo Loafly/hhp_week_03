@@ -6,7 +6,6 @@ import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertS
 import kr.com.hhp.concertreservationapiserver.concert.domain.service.ConcertSeatService
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertReservationStatus
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertSeatEntity
-import kr.com.hhp.concertreservationapiserver.user.domain.exception.UserIdMisMatchException
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
