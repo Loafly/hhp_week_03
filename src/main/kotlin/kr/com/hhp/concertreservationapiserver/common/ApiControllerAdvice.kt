@@ -1,6 +1,7 @@
 package kr.com.hhp.concertreservationapiserver.common
 
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -16,6 +17,11 @@ class ApiControllerAdvice : ResponseEntityExceptionHandler() {
     fun handleCustomException(exception: CustomException): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(exception.code, exception.message)
         return ResponseEntity(errorResponse, exception.httpStatus)
+    }
+
+    @ExceptionHandler(Exception::class)
+    fun handleException(exception: Exception): ResponseEntity<String?> {
+        return ResponseEntity(exception.message, HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
 }
