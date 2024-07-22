@@ -1,13 +1,11 @@
 package kr.com.hhp.concertreservationapiserver.unit.concert.application
 
-import kr.com.hhp.concertreservationapiserver.concert.domain.service.ConcertSeatService
-import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertSeatAlreadyReservedException
-import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertSeatIsNotTemporaryStatusException
-import kr.com.hhp.concertreservationapiserver.concert.domain.exception.ConcertSeatNotFoundException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertSeatRepository
+import kr.com.hhp.concertreservationapiserver.concert.domain.service.ConcertSeatService
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertReservationStatus
 import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertSeatEntity
-import kr.com.hhp.concertreservationapiserver.user.domain.exception.UserIdMisMatchException
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -100,50 +98,14 @@ class ConcertSeatServiceTest {
             given(concertSeatRepository.findByConcertSeatId(concertSeatId)).willReturn(null)
 
             //when
-            val exception = assertThrows<ConcertSeatNotFoundException> {
+            val exception = assertThrows<CustomException> {
                 concertSeatService.getByConcertSeatId(concertSeatId)
             }
 
             //then
             then(concertSeatRepository).should().findByConcertSeatId(concertSeatId)
-            assertEquals("ConcertSeat이 존재하지 않습니다. concertSeatId : $concertSeatId", exception.message)
-        }
-    }
-
-    @Nested
-    @DisplayName("임시예약 상태가 아닌 경우 예외처리")
-    inner class ThrowExceptionIfStatusIsNotTemporaryTest {
-        @Test
-        fun `성공 (임시 예약 상태인 경우)`() {
-            //given
-            val concertSeat = ConcertSeatEntity(
-                concertDetailId = 1L,
-                seatNumber = 1,
-                price = 50000,
-                reservationStatus = ConcertReservationStatus.T
-            )
-
-            //when
-            concertSeatService.throwExceptionIfStatusIsNotTemporary(concertSeat)
-        }
-
-        @Test
-        fun `실패 (임시 예약 상태가 아닌 경우)`() {
-            //given
-            val concertSeat = ConcertSeatEntity(
-                concertDetailId = 1L,
-                seatNumber = 1,
-                price = 50000,
-                reservationStatus = ConcertReservationStatus.A
-            )
-
-            //when
-            val exception = assertThrows<ConcertSeatIsNotTemporaryStatusException> {
-                concertSeatService.throwExceptionIfStatusIsNotTemporary(concertSeat)
-            }
-
-            //then
-            assertEquals("임시 예약된 좌석이 아닙니다.", exception.message)
+            assertEquals(ErrorCode.CONCERT_SEAT_NOT_FOUND.message, exception.message)
+            assertEquals(ErrorCode.CONCERT_SEAT_NOT_FOUND.code, exception.code)
         }
     }
 
@@ -197,7 +159,7 @@ class ConcertSeatServiceTest {
                 .willReturn(expectedConcertSeat)
 
             // when
-            val exception = assertThrows<ConcertSeatIsNotTemporaryStatusException> {
+            val exception = assertThrows<CustomException> {
                 concertSeatService.payForTemporaryReservedSeatToConfirmedReserved(
                     concertSeatId = concertDetailId,
                     userId = userId
@@ -206,7 +168,8 @@ class ConcertSeatServiceTest {
 
             //then
             then(concertSeatRepository).should().findByConcertSeatId(concertSeatId)
-            assertEquals("임시 예약된 좌석이 아닙니다.", exception.message)
+            assertEquals(ErrorCode.CONCERT_SEAT_IS_NOT_TEMPORARY_STATUS.message, exception.message)
+            assertEquals(ErrorCode.CONCERT_SEAT_IS_NOT_TEMPORARY_STATUS.code, exception.code)
         }
 
         @Test
@@ -226,7 +189,7 @@ class ConcertSeatServiceTest {
                 .willReturn(expectedConcertSeat)
 
             // when
-            val exception = assertThrows<UserIdMisMatchException> {
+            val exception = assertThrows<CustomException> {
                 concertSeatService.payForTemporaryReservedSeatToConfirmedReserved(
                     concertSeatId = concertDetailId,
                     userId = userId
@@ -235,13 +198,14 @@ class ConcertSeatServiceTest {
 
             //then
             then(concertSeatRepository).should().findByConcertSeatId(concertSeatId)
-            assertEquals("유저Id가 일치하지 않습니다. userId : ${userId}, concertSeatId.userId : $concertSeatUserId", exception.message)
+            assertEquals(ErrorCode.CONCERT_USER_ID_IS_MIS_MATCH.message, exception.message)
+            assertEquals(ErrorCode.CONCERT_USER_ID_IS_MIS_MATCH.code, exception.code)
         }
     }
 
 
     @Nested
-    @DisplayName("임시 예약되어있는 좌석 예약 완료를 위해 결제")
+    @DisplayName("좌석 임시 예약")
     inner class ReserveSeatToTemporaryTest {
         @Test
         fun `성공 (정상 케이스)`() {
@@ -272,7 +236,7 @@ class ConcertSeatServiceTest {
         }
 
         @Test
-        fun `실패 (이미 예약된 좌석인 경우)`() {
+        fun `실패 (예약 가능한 좌석이 아닌 경우)`() {
             //given
             val concertSeatId = 1L
             val concertDetailId = 1L
@@ -286,93 +250,14 @@ class ConcertSeatServiceTest {
             given(concertSeatRepository.findByConcertSeatId(concertSeatId)).willReturn(expectedConcertSeat)
 
             //when
-            val exception = assertThrows<ConcertSeatAlreadyReservedException> {
+            val exception = assertThrows<CustomException> {
                 concertSeatService.reserveSeatToTemporary(concertSeatId = concertSeatId, userId = userId)
             }
 
             //then
             then(concertSeatRepository).should().findByConcertSeatId(concertSeatId)
-            assertEquals("이미 예약된 좌석입니다.", exception.message)
-        }
-    }
-
-
-    @Nested
-    @DisplayName("예약 가능 상태가 아닌 경우 예외처리")
-    inner class ThrowExceptionIfStatusIsNotAvailableTest {
-        @Test
-        fun `성공 (예약 가능 상태인 경우)`() {
-            //given
-            val concertSeat = ConcertSeatEntity(
-                concertDetailId = 1L,
-                seatNumber = 1,
-                price = 50000,
-                reservationStatus = ConcertReservationStatus.A
-            )
-
-            //when
-            concertSeatService.throwExceptionIfStatusIsNotAvailable(concertSeat)
-        }
-
-        @Test
-        fun `실패 (예약 가능 상태가 아닌 경우)`() {
-            //given
-            val concertSeat = ConcertSeatEntity(
-                concertDetailId = 1L,
-                seatNumber = 1,
-                price = 50000,
-                reservationStatus = ConcertReservationStatus.C
-            )
-
-            //when
-            val exception = assertThrows<ConcertSeatAlreadyReservedException> {
-                concertSeatService.throwExceptionIfStatusIsNotAvailable(concertSeat)
-            }
-
-            //then
-            assertEquals("이미 예약된 좌석입니다.", exception.message)
-        }
-    }
-
-    @Nested
-    @DisplayName("좌석 예약한 사용자와 결제한 사용자가 다른 경우 예외처리")
-    inner class ThrowExceptionIfMisMatchUserIdTest {
-        @Test
-        fun `성공 (사용자가 모두 동일인인 경우)`() {
-            //given
-            val userId = 1L
-            val concertSeat = ConcertSeatEntity(
-                concertDetailId = 1L,
-                seatNumber = 1,
-                price = 50000,
-                reservationStatus = ConcertReservationStatus.A,
-                userId = userId
-            )
-
-            //when
-            concertSeatService.throwExceptionIfMisMatchUserId(concertSeat, userId)
-        }
-
-        @Test
-        fun `실패 (예약 가능 상태가 아닌 경우)`() {
-            //given
-            val concertUserId = 1L
-            val userId = 2L
-            val concertSeat = ConcertSeatEntity(
-                concertDetailId = 1L,
-                seatNumber = 1,
-                price = 50000,
-                reservationStatus = ConcertReservationStatus.C,
-                userId = concertUserId
-            )
-
-            //when
-            val exception = assertThrows<UserIdMisMatchException> {
-                concertSeatService.throwExceptionIfMisMatchUserId(concertSeat, userId)
-            }
-
-            //then
-            assertEquals("유저Id가 일치하지 않습니다. userId : ${userId}, concertSeatId.userId : ${concertSeat.userId}", exception.message)
+            assertEquals(ErrorCode.CONCERT_SEAT_ALREADY_RESERVED.message, exception.message)
+            assertEquals(ErrorCode.CONCERT_SEAT_ALREADY_RESERVED.code, exception.code)
         }
     }
 

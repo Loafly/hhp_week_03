@@ -1,3 +1,5 @@
+package kr.com.hhp.concertreservationapiserver.concert.controller
+
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
@@ -6,8 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import kr.com.hhp.concertreservationapiserver.common.ErrorResponse
+import kr.com.hhp.concertreservationapiserver.common.annotation.RequiredInProgressToken
 import kr.com.hhp.concertreservationapiserver.concert.application.ConcertFacade
-import kr.com.hhp.concertreservationapiserver.concert.controller.ConcertDto
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -21,9 +23,7 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/api/concerts")
 @Tag(name = "Concert")
-class ConcertController(
-    private val concertFacade: ConcertFacade
-) {
+class ConcertController(private val concertFacade: ConcertFacade) {
 
     @ApiResponses(value = [
         ApiResponse(
@@ -52,6 +52,7 @@ class ConcertController(
 
     ])
 
+    @RequiredInProgressToken
     @GetMapping("/{concertId}/details")
     fun getConcertDetail(@PathVariable("concertId") concertId: Long,
                          @RequestHeader(name = "token") token: String,
@@ -76,7 +77,6 @@ class ConcertController(
                 examples = [
                     ExampleObject(name = "토큰이 InProgress 상태가 아닌 경우 (token == notInProgressToken)", value = "{ \"message\" : \"토큰 상태가 올바르지 않습니다.\"}"),
                 ]
-
             )]
         ),
         ApiResponse(
@@ -91,6 +91,7 @@ class ConcertController(
         ),
     ])
 
+    @RequiredInProgressToken
     @GetMapping("/details/{concertDetailId}/seats")
     fun getConcertSeat(@PathVariable("concertDetailId") concertDetailId: Long,
                        @RequestHeader(name = "token") token: String): List<ConcertDto.SeatResponse> {
@@ -111,7 +112,6 @@ class ConcertController(
                     ExampleObject(name = "토큰이 InProgress 상태가 아닌 경우 (token == notInProgressToken)", value = "{ \"message\" : \"토큰 상태가 올바르지 않습니다.\"}"),
                     ExampleObject(name = "콘서트 예매기간이 아닌 경우 (concertSeatId == 10)", value = "{ \"message\" : \"콘서트 예매 기간이 아닙니다.\"}"),
                     ExampleObject(name = "좌석이 이미 예약된 경우 (concertSeatId == 100)", value = "{ \"message\" : \"이미 예약된 좌석입니다.\"}"),
-                    ExampleObject(name = "concertSeat 의 userId와 일치하지 않는 경우 (concertSeatId != userId)", value = "{ \"message\" : \"유저Id가 일치하지 않습니다. userId : 1, concertSeatId.userId : 2\"}"),
                 ]
             )]
         ),
@@ -129,14 +129,15 @@ class ConcertController(
 
     ])
 
-    @PostMapping("/details/seats/reservation")
+    @RequiredInProgressToken
+    @PostMapping("/details/seats/{concertSeatId}/reservation")
     fun reservationSeat(
         @RequestHeader(name = "token") token: String,
-        @RequestBody request: ConcertDto.ReservationSeatRequest
+        @PathVariable("concertSeatId") concertSeatId: Long,
     ): ConcertDto.SeatResponse {
         return concertFacade.reserveSeatToTemporary(
             token = token,
-            concertSeatId = request.concertSeatId
+            concertSeatId = concertSeatId
         )
     }
 
@@ -170,7 +171,7 @@ class ConcertController(
         ),
 
     ])
-
+    @RequiredInProgressToken
     @PostMapping("/details/seats/{concertSeatId}/payment")
     fun paymentSeat(
         @RequestHeader(name = "token") token: String,

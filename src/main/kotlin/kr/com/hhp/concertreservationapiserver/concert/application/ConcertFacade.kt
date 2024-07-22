@@ -28,9 +28,6 @@ class ConcertFacade(
     // 예약 가능 날짜 조회
     @Transactional(readOnly = true)
     fun getAllAvailableReservationDetail(token:String, concertId: Long, reservationDateTime: LocalDateTime): List<ConcertDto.DetailResponse> {
-        val tokenQueue = tokenQueueService.getByToken(token)
-        tokenQueueService.throwExceptionIfStatusIsNotInProgress(tokenQueue)
-
         // 실제 존재하는 concertId가 맞는지 확인
         val concert = concertService.getByConcertId(concertId)
         val availableReservationConcertDetails = concertDetailService.getAllAvailableReservationByConcertId(
@@ -53,9 +50,6 @@ class ConcertFacade(
     // 예약 가능 좌석 조회
     @Transactional(readOnly = true)
     fun getAllAvailableReservationSeat(token:String, concertDetailId: Long): List<ConcertDto.SeatResponse> {
-        val tokenQueue = tokenQueueService.getByToken(token)
-        tokenQueueService.throwExceptionIfStatusIsNotInProgress(tokenQueue)
-
         val concertDetail = concertDetailService.getByConcertDetailId(concertDetailId)
 
         return concertSeatService.getAllReservationStatusIsAvailableByConcertDetailId(concertDetail.concertDetailId!!)
@@ -71,7 +65,10 @@ class ConcertFacade(
     @Transactional
     fun reserveSeatToTemporary(token: String, concertSeatId: Long): ConcertDto.SeatResponse {
         val tokenQueue = tokenQueueService.getByToken(token)
-        tokenQueueService.throwExceptionIfStatusIsNotInProgress(tokenQueue)
+
+        val concertSeat = concertSeatService.getByConcertSeatId(concertSeatId)
+        val concertDetail = concertDetailService.getByConcertDetailId(concertSeat.concertDetailId)
+        concertDetailService.throwExceptionIfNotReservationPeriod(concertDetail)
 
         val updatedConcertSeat = concertSeatService.reserveSeatToTemporary(
             concertSeatId = concertSeatId,
@@ -94,8 +91,6 @@ class ConcertFacade(
     @Transactional
     fun payForTemporaryReservedSeatToConfirmedReservation(token: String, concertSeatId: Long) {
         val tokenQueue = tokenQueueService.getByToken(token)
-        tokenQueueService.throwExceptionIfStatusIsNotInProgress(tokenQueue)
-
         val concertSeat = concertSeatService.payForTemporaryReservedSeatToConfirmedReserved(concertSeatId = concertSeatId, userId = tokenQueue.userId)
         concertReservationHistoryService.create(
             concertSeatId = concertSeat.concertSeatId!!,

@@ -1,6 +1,7 @@
 package kr.com.hhp.concertreservationapiserver.user.domain.service
 
-import kr.com.hhp.concertreservationapiserver.user.domain.exception.UserNotFoundException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.user.domain.repository.UserRepository
 import kr.com.hhp.concertreservationapiserver.user.infra.entity.UserEntity
 import org.springframework.stereotype.Service
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service
 class UserService(private val userRepository: UserRepository) {
 
     fun getByUserId(userId: Long): UserEntity {
-        return userRepository.findByUserId(userId)?: throw UserNotFoundException("User가 존재하지 않습니다. userId : $userId")
+        return userRepository.findByUserId(userId)?: throw CustomException(ErrorCode.USER_NOT_FOUND)
     }
 
     fun save(): UserEntity {

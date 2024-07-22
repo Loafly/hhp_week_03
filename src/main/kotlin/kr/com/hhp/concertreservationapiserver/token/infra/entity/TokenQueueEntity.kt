@@ -9,12 +9,11 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import kr.com.hhp.concertreservationapiserver.token.domain.exception.TokenStatusIsNotProgressException
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @Entity
 @Table(name = "token_queue")
@@ -67,5 +66,9 @@ class TokenQueueEntity (
 
     fun updateToInProgress() {
         status = TokenQueueStatus.P
+    }
+
+    fun isStatusInProgress(): Boolean {
+        return this.status == TokenQueueStatus.P
     }
 }

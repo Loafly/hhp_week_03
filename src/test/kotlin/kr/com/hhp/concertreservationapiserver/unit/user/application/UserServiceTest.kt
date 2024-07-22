@@ -1,8 +1,9 @@
 package kr.com.hhp.concertreservationapiserver.unit.user.application
 
-import kr.com.hhp.concertreservationapiserver.user.domain.service.UserService
-import kr.com.hhp.concertreservationapiserver.user.domain.exception.UserNotFoundException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.user.domain.repository.UserRepository
+import kr.com.hhp.concertreservationapiserver.user.domain.service.UserService
 import kr.com.hhp.concertreservationapiserver.user.infra.entity.UserEntity
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
@@ -51,13 +52,14 @@ class UserServiceTest {
             given(userRepository.findByUserId(userId)).willReturn(null)
 
             // when
-            val exception = assertThrows<UserNotFoundException> {
+            val exception = assertThrows<CustomException> {
                 userService.getByUserId(userId)
             }
 
             // then
             then(userRepository).should().findByUserId(userId)
-            assertEquals("User가 존재하지 않습니다. userId : $userId", exception.message)
+            assertEquals(ErrorCode.USER_NOT_FOUND.message, exception.message)
+            assertEquals(ErrorCode.USER_NOT_FOUND.code, exception.code)
         }
     }
 

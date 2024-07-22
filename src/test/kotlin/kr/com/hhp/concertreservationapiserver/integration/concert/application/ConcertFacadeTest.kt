@@ -19,8 +19,10 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
+@Transactional
 @SpringBootTest
 class ConcertFacadeTest {
 
@@ -141,7 +143,7 @@ class ConcertFacadeTest {
         assertEquals(concertSeat.concertSeatId, temporaryConcertSeat.concertSeatId)
         assertEquals(concertSeat.seatNumber, temporaryConcertSeat.seatNumber)
         assertEquals(concertSeat.price, temporaryConcertSeat.price)
-        assertNotEquals(concertSeat.reservationStatus.toString(), temporaryConcertSeat.reservationStatus)
+        assertEquals(ConcertReservationStatus.T.toString(), temporaryConcertSeat.reservationStatus)
     }
 
     @Test
