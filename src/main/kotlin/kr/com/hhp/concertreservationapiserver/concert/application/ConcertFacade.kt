@@ -65,8 +65,8 @@ class ConcertFacade(
     @Transactional
     fun reserveSeatToTemporary(token: String, concertSeatId: Long): ConcertDto.SeatResponse {
         val tokenQueue = tokenQueueService.getByToken(token)
+        val concertSeat = concertSeatService.getByConcertSeatIdWithXLock(concertSeatId)
 
-        val concertSeat = concertSeatService.getByConcertSeatId(concertSeatId)
         val concertDetail = concertDetailService.getByConcertDetailId(concertSeat.concertDetailId)
         concertDetailService.throwExceptionIfNotReservationPeriod(concertDetail)
 
@@ -74,6 +74,7 @@ class ConcertFacade(
             concertSeatId = concertSeatId,
             userId = tokenQueue.userId
         )
+
         concertReservationHistoryService.create(
             concertSeatId = updatedConcertSeat.concertSeatId!!,
             status = updatedConcertSeat.reservationStatus
@@ -91,23 +92,24 @@ class ConcertFacade(
     @Transactional
     fun payForTemporaryReservedSeatToConfirmedReservation(token: String, concertSeatId: Long) {
         val tokenQueue = tokenQueueService.getByToken(token)
-        val concertSeat = concertSeatService.payForTemporaryReservedSeatToConfirmedReserved(concertSeatId = concertSeatId, userId = tokenQueue.userId)
+        val concertSeat = concertSeatService.getByConcertSeatIdWithXLock(concertSeatId)
+        val payedConcertSeat = concertSeatService.payForTemporaryReservedSeatToConfirmedReserved(concertSeatId = concertSeat.concertSeatId!!, userId = tokenQueue.userId)
         concertReservationHistoryService.create(
-            concertSeatId = concertSeat.concertSeatId!!,
-            status = concertSeat.reservationStatus
+            concertSeatId = payedConcertSeat.concertSeatId!!,
+            status = payedConcertSeat.reservationStatus
         )
 
-        val wallet = walletService.useBalance(userId = tokenQueue.userId, amount = concertSeat.price)
+        val wallet = walletService.useBalance(userId = tokenQueue.userId, amount = payedConcertSeat.price)
 
         concertSeatPaymentHistoryService.create(
             walletId = wallet.walletId!!,
-            concertSeatId = concertSeat.concertSeatId!!,
-            price = concertSeat.price
+            concertSeatId = payedConcertSeat.concertSeatId!!,
+            price = payedConcertSeat.price
         )
         walletHistoryService.create(
             walletId = wallet.walletId!!,
             balance = wallet.balance,
-            amount = -concertSeat.price
+            amount = -payedConcertSeat.price
         )
     }
 }

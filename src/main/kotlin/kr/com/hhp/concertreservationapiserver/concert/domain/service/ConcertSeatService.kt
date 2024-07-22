@@ -23,6 +23,11 @@ class ConcertSeatService(private val concertSeatRepository : ConcertSeatReposito
             ?: throw CustomException(ErrorCode.CONCERT_SEAT_NOT_FOUND)
     }
 
+    fun getByConcertSeatIdWithXLock(concertSeatId: Long): ConcertSeatEntity {
+        return concertSeatRepository.findByConcertSeatIdWithXLock(concertSeatId)
+            ?: throw CustomException(ErrorCode.CONCERT_SEAT_NOT_FOUND)
+    }
+
     fun payForTemporaryReservedSeatToConfirmedReserved(concertSeatId: Long, userId: Long): ConcertSeatEntity {
         val concertSeat = getByConcertSeatId(concertSeatId)
         throwExceptionIfStatusIsNotTemporary(concertSeat)
