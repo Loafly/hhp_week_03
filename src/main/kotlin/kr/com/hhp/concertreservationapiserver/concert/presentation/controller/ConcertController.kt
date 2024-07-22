@@ -13,7 +13,6 @@ import kr.com.hhp.concertreservationapiserver.concert.business.application.Conce
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -28,7 +27,7 @@ class ConcertController(private val concertFacade: ConcertFacade) {
     @ApiResponses(value = [
         ApiResponse(
             responseCode = "200", description = "성공",
-            content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = ConcertDto.DetailResponse::class)))]
+            content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = ConcertResponseDto.Detail::class)))]
         ),
         ApiResponse(
             responseCode = "400", description = "요청 데이터가 잘못된 경우",
@@ -56,19 +55,19 @@ class ConcertController(private val concertFacade: ConcertFacade) {
     @GetMapping("/{concertId}/details")
     fun getConcertDetail(@PathVariable("concertId") concertId: Long,
                          @RequestHeader(name = "token") token: String,
-                         @RequestParam(name = "reservationDateTime") reservationDateTime: LocalDateTime): List<ConcertDto.DetailResponse> {
+                         @RequestParam(name = "reservationDateTime") reservationDateTime: LocalDateTime): List<ConcertResponseDto.Detail> {
 
         return concertFacade.getAllAvailableReservationDetail(
             token = token,
             concertId = concertId,
             reservationDateTime = reservationDateTime
-        )
+        ).map { ConcertResponseDto.Detail(it) }
     }
 
     @ApiResponses(value = [
         ApiResponse(
             responseCode = "200", description = "성공",
-            content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = ConcertDto.SeatResponse::class)))]
+            content = [Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = ConcertResponseDto.Seat::class)))]
         ),
         ApiResponse(
             responseCode = "400", description = "요청 데이터가 잘못된 경우",
@@ -94,15 +93,16 @@ class ConcertController(private val concertFacade: ConcertFacade) {
     @RequiredInProgressToken
     @GetMapping("/details/{concertDetailId}/seats")
     fun getConcertSeat(@PathVariable("concertDetailId") concertDetailId: Long,
-                       @RequestHeader(name = "token") token: String): List<ConcertDto.SeatResponse> {
+                       @RequestHeader(name = "token") token: String): List<ConcertResponseDto.Seat> {
 
         return concertFacade.getAllAvailableReservationSeat(token = token, concertDetailId = concertDetailId)
+            .map { ConcertResponseDto.Seat(it) }
     }
 
     @ApiResponses(value = [
         ApiResponse(
             responseCode = "200", description = "성공",
-            content = [Content(mediaType = "application/json", schema = Schema(implementation = ConcertDto.SeatResponse::class))]
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ConcertResponseDto.Seat::class))]
         ),
         ApiResponse(
             responseCode = "400", description = "요청 데이터가 잘못된 경우",
@@ -134,10 +134,12 @@ class ConcertController(private val concertFacade: ConcertFacade) {
     fun reservationSeat(
         @RequestHeader(name = "token") token: String,
         @PathVariable("concertSeatId") concertSeatId: Long,
-    ): ConcertDto.SeatResponse {
-        return concertFacade.reserveSeatToTemporary(
-            token = token,
-            concertSeatId = concertSeatId
+    ): ConcertResponseDto.Seat {
+        return ConcertResponseDto.Seat(
+            concertFacade.reserveSeatToTemporary(
+                token = token,
+                concertSeatId = concertSeatId
+            )
         )
     }
 

@@ -1,10 +1,10 @@
-package kr.com.hhp.concertreservationapiserver.concert.presentation.controller
+package kr.com.hhp.concertreservationapiserver.concert.business.application
 
 import java.time.LocalDateTime
 
 class ConcertDto {
 
-    data class DetailResponse (
+    data class Detail (
         val concertId: Long,
         val totalSeatCount: Int,
         val remainingSeatCount: Int,
@@ -12,15 +12,10 @@ class ConcertDto {
         val reservationEndDateTime: LocalDateTime,
     )
 
-    data class SeatResponse (
+    data class Seat (
         val concertSeatId: Long,
         val seatNumber: Int,
         val price: Int,
         val reservationStatus: String
     )
-
-    data class ReservationSeatRequest (
-        val concertSeatId: Long,
-    )
-
 }

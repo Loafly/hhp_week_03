@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 @SpringBootTest
-class TokenFacadeTest {
+class TokenQueueFacadeTest {
 
     @Autowired
     private lateinit var tokenFacade: TokenFacade
@@ -33,7 +33,7 @@ class TokenFacadeTest {
 
     @Nested
     @DisplayName("토큰 발급")
-    inner class CreateTokenTest {
+    inner class CreateTokenQueueTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given
@@ -65,7 +65,7 @@ class TokenFacadeTest {
 
     @Nested
     @DisplayName("토큰 정보 조회")
-    inner class GetTokenInfoTest {
+    inner class GetTokenQueueInfoTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given
@@ -100,7 +100,7 @@ class TokenFacadeTest {
 
     @Nested
     @DisplayName("토큰 유효성 검사")
-    inner class VerifyTokenTest {
+    inner class VerifyTokenQueueTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given
@@ -146,7 +146,7 @@ class TokenFacadeTest {
 
     @Nested
     @DisplayName("토큰 유효성 검사 (Progress 상태인지)")
-    inner class VerifyTokenIsInProgressTest {
+    inner class VerifyTokenQueueIsInProgressTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given

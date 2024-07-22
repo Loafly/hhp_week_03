@@ -24,7 +24,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 @ExtendWith(MockitoExtension::class)
-class TokenQueueServiceTest {
+class TokenQueueQueueServiceTest {
 
     @Mock
     private lateinit var tokenQueueRepository: TokenQueueRepository
@@ -53,7 +53,7 @@ class TokenQueueServiceTest {
 
     @Nested
     @DisplayName("토큰 큐 조회")
-    inner class GetByTokenTest {
+    inner class GetByTokenQueueTest {
         @Test
         fun `성공 (정상 케이스)` () {
             //given
@@ -93,7 +93,7 @@ class TokenQueueServiceTest {
 
     @Nested
     @DisplayName("첫번째 대기 토큰 큐 조회")
-    inner class GetNullAbleFirstWaitingTokenQueueTest {
+    inner class GetNullAbleFirstWaitingTokenQueueQueueTest {
         @Test
         fun `성공 (데이터가 있는 정상 케이스)`() {
             // given
@@ -128,7 +128,7 @@ class TokenQueueServiceTest {
 
     @Nested
     @DisplayName("진행상태인 토큰 큐 모두 조회")
-    inner class GetAllByProgressTokenQueueTest {
+    inner class GetAllByProgressTokenQueueQueueTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given
@@ -173,7 +173,7 @@ class TokenQueueServiceTest {
 
     @Nested
     @DisplayName("토큰큐 Id 리스트로 토큰 큐 전체 조회")
-    inner class GetAllByTokenQueueIdsTest {
+    inner class GetAllByTokenQueueQueueIdsTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given
@@ -245,7 +245,7 @@ class TokenQueueServiceTest {
 
     @Nested
     @DisplayName("대기중인 토큰 InProgress로 업데이트")
-    inner class UpdateWaitingAllTokenToInProgress {
+    inner class UpdateWaitingAllTokenQueueToInProgress {
         @Test
         fun `성공 (Progress가 여유로운 정상 케이스 )`() {
             //given
@@ -337,7 +337,7 @@ class TokenQueueServiceTest {
 
     @Nested
     @DisplayName("토큰 시간이 만료되었는지 확인 후 만료된 경우 업데이트")
-    inner class CheckAndUpdateTokenExpiration {
+    inner class CheckAndUpdateTokenQueueExpiration {
         @Test
         fun `성공 (3개 중 2개가 만료된 정상 케이스)`() {
             //given

@@ -19,7 +19,7 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.then
 
 @ExtendWith(MockitoExtension::class)
-class ConcertServiceTest {
+class ConcertDtoServiceTest {
 
     @Mock
     private lateinit var concertRepository: ConcertRepository
@@ -29,7 +29,7 @@ class ConcertServiceTest {
 
     @Nested
     @DisplayName("콘서트 조회")
-    inner class GetByConcertIdTest {
+    inner class GetByConcertDtoIdTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given

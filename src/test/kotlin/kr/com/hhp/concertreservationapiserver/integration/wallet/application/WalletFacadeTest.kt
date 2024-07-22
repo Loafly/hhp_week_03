@@ -31,7 +31,7 @@ class WalletFacadeTest {
 
     @Nested
     @DisplayName("지갑 잔액 조회")
-    inner class GetBalanceTest {
+    inner class GetWalletTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given

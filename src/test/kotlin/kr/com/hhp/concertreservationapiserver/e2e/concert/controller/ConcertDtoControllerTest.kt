@@ -31,7 +31,7 @@ import java.time.LocalDateTime
 @Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
-class ConcertControllerTest {
+class ConcertDtoControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -56,7 +56,7 @@ class ConcertControllerTest {
 
     @Nested
     @DisplayName("콘서트 상세 조회")
-    inner class GetConcertDetailTest {
+    inner class GetConcertDtoDetailTest {
         @Test
         fun `성공 (정상 케이스)`() {
             // given
@@ -174,7 +174,7 @@ class ConcertControllerTest {
 
     @Nested
     @DisplayName("콘서트 좌석 조회")
-    inner class GetConcertSeatTest {
+    inner class GetConcertDtoSeatTest {
         @Test
         fun `성공 (정상 케이스)`() {
             // given

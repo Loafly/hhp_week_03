@@ -41,7 +41,7 @@ class WalletControllerTest {
 
     @Nested
     @DisplayName("지갑 잔액 조회")
-    inner class GetBalanceTest {
+    inner class GetWalletTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given
@@ -128,7 +128,7 @@ class WalletControllerTest {
 
     @Nested
     @DisplayName("지갑 잔액 충전")
-    inner class UpdateBalanceTest {
+    inner class UpdateWalletTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given

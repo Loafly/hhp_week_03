@@ -30,7 +30,7 @@ import java.time.LocalDateTime
 
 @Transactional
 @SpringBootTest
-class ConcertFacadeTest {
+class ConcertDtoFacadeTest {
 
     @Autowired
     private lateinit var concertFacade: ConcertFacade

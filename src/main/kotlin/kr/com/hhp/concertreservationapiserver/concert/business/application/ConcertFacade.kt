@@ -1,7 +1,6 @@
 package kr.com.hhp.concertreservationapiserver.concert.business.application
 
 import kr.com.hhp.concertreservationapiserver.common.annotation.Facade
-import kr.com.hhp.concertreservationapiserver.concert.presentation.controller.ConcertDto
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.service.ConcertDetailService
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.service.ConcertReservationHistoryService
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.service.ConcertSeatPaymentHistoryService
@@ -27,7 +26,7 @@ class ConcertFacade(
 
     // 예약 가능 날짜 조회
     @Transactional(readOnly = true)
-    fun getAllAvailableReservationDetail(token:String, concertId: Long, reservationDateTime: LocalDateTime): List<ConcertDto.DetailResponse> {
+    fun getAllAvailableReservationDetail(token:String, concertId: Long, reservationDateTime: LocalDateTime): List<ConcertDto.Detail> {
         // 실제 존재하는 concertId가 맞는지 확인
         val concert = concertService.getByConcertId(concertId)
         val availableReservationConcertDetails = concertDetailService.getAllAvailableReservationByConcertId(
@@ -37,7 +36,7 @@ class ConcertFacade(
 
         return availableReservationConcertDetails
             .map {
-                ConcertDto.DetailResponse(
+                ConcertDto.Detail(
                     concertId = it.concertId,
                     totalSeatCount = it.totalSeatCount,
                     remainingSeatCount = it.remainingSeatCount,
@@ -49,11 +48,11 @@ class ConcertFacade(
 
     // 예약 가능 좌석 조회
     @Transactional(readOnly = true)
-    fun getAllAvailableReservationSeat(token:String, concertDetailId: Long): List<ConcertDto.SeatResponse> {
+    fun getAllAvailableReservationSeat(token:String, concertDetailId: Long): List<ConcertDto.Seat> {
         val concertDetail = concertDetailService.getByConcertDetailId(concertDetailId)
 
         return concertSeatService.getAllReservationStatusIsAvailableByConcertDetailId(concertDetail.concertDetailId!!)
-            .map { ConcertDto.SeatResponse(
+            .map { ConcertDto.Seat(
                 concertSeatId = it.concertSeatId!!,
                 seatNumber = it.seatNumber,
                 price = it.price,
@@ -63,7 +62,7 @@ class ConcertFacade(
 
     // 좌석 임시 예약
     @Transactional
-    fun reserveSeatToTemporary(token: String, concertSeatId: Long): ConcertDto.SeatResponse {
+    fun reserveSeatToTemporary(token: String, concertSeatId: Long): ConcertDto.Seat {
         val tokenQueue = tokenQueueService.getByToken(token)
         val concertSeat = concertSeatService.getByConcertSeatIdWithXLock(concertSeatId)
 
@@ -80,7 +79,7 @@ class ConcertFacade(
             status = updatedConcertSeat.reservationStatus
         )
 
-        return ConcertDto.SeatResponse(
+        return ConcertDto.Seat(
             updatedConcertSeat.concertSeatId!!,
             updatedConcertSeat.seatNumber,
             updatedConcertSeat.price,

@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 @ExtendWith(MockitoExtension::class)
-class ConcertDetailServiceTest {
+class ConcertDtoDetailServiceTest {
 
     @Mock
     private lateinit var concertDetailRepository: ConcertDetailRepository
@@ -29,7 +29,7 @@ class ConcertDetailServiceTest {
 
     @Nested
     @DisplayName("특정 콘서트의 예약 가능한 날짜 조회")
-    inner class GetAllAvailableReservationByConcertIdTest {
+    inner class GetAllAvailableReservationByConcertDtoIdTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given
@@ -83,7 +83,7 @@ class ConcertDetailServiceTest {
 
     @Nested
     @DisplayName("콘서트 상세 조회")
-    inner class GetByConcertDetailIdTest {
+    inner class GetByConcertDtoDetailIdTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given

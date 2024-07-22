@@ -3,7 +3,6 @@ package kr.com.hhp.concertreservationapiserver.token.business.application
 import kr.com.hhp.concertreservationapiserver.common.annotation.Facade
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
-import kr.com.hhp.concertreservationapiserver.token.presentation.controller.TokenDto
 import kr.com.hhp.concertreservationapiserver.token.business.domain.service.TokenQueueService
 import kr.com.hhp.concertreservationapiserver.user.business.domain.service.UserService
 import org.springframework.transaction.annotation.Transactional
@@ -15,21 +14,21 @@ class TokenFacade(private val userService: UserService,
 
     // 토큰 발급
     @Transactional
-    fun createToken(userId: Long): TokenDto.TokenResponse {
+    fun createToken(userId: Long): TokenDto.TokenQueue {
         val user = userService.getByUserId(userId)
         val tokenQueue = tokenQueueService.createByUserId(user.userId!!)
 
-        return TokenDto.TokenResponse(tokenQueue.token)
+        return TokenDto.TokenQueue(tokenQueue.token)
     }
 
     // 토큰 조회
     @Transactional(readOnly = true)
-    fun getTokenInfo(token: String): TokenDto.TokenInfoResponse {
+    fun getTokenInfo(token: String): TokenDto.TokenInfo {
         val tokenQueue = tokenQueueService.getByToken(token)
         val firstWaitingToken = tokenQueueService.getNullAbleFirstWaitingTokenQueue()
         val remainingNumber = tokenQueueService.calculateRemainingNumber(firstWaitingToken, tokenQueue)
 
-        return TokenDto.TokenInfoResponse(
+        return TokenDto.TokenInfo(
             userId = tokenQueue.userId,
             status = tokenQueue.status.toString(),
             remainingNumber = remainingNumber

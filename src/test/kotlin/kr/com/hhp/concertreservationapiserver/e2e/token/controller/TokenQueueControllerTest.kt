@@ -25,7 +25,7 @@ import java.time.LocalDateTime
 @Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
-class TokenControllerTest {
+class TokenQueueControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -41,7 +41,7 @@ class TokenControllerTest {
 
     @Nested
     @DisplayName("토큰 생성 조회")
-    inner class CreateTokenTest {
+    inner class CreateTokenQueueTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given
@@ -87,7 +87,7 @@ class TokenControllerTest {
 
     @Nested
     @DisplayName("콘서트 상세 조회")
-    inner class GetTokenTokenInfo {
+    inner class GetTokenTokenQueueInfo {
         @Test
         fun `성공 (정상 케이스)`() {
             //given

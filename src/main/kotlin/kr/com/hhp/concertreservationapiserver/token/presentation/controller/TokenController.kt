@@ -26,7 +26,7 @@ class TokenController(private val tokenFacade: TokenFacade) {
     @ApiResponses(value = [
         ApiResponse(
             responseCode = "201", description = "성공",
-            content = [Content(mediaType = "application/json", schema = Schema(implementation = TokenDto.TokenResponse::class))]
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = TokenResponseDto.Token::class))]
         ),
 
         ApiResponse(
@@ -41,15 +41,15 @@ class TokenController(private val tokenFacade: TokenFacade) {
     ])
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun createToken(@RequestBody request: TokenDto.PostRequest): TokenDto.TokenResponse {
+    fun createToken(@RequestBody request: TokenRequestDto.Post): TokenResponseDto.Token {
 
-        return tokenFacade.createToken(userId = request.userId)
+        return TokenResponseDto.Token(tokenFacade.createToken(userId = request.userId))
     }
 
     @ApiResponses(value = [
         ApiResponse(
             responseCode = "200", description = "성공",
-            content = [Content(mediaType = "application/json", schema = Schema(implementation = TokenDto.TokenInfoResponse::class))]
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = TokenResponseDto.TokenInfo::class))]
         ),
         ApiResponse(
             responseCode = "400", description = "요청 데이터가 잘못된 경우",
@@ -72,8 +72,8 @@ class TokenController(private val tokenFacade: TokenFacade) {
     ])
     @RequiredToken
     @GetMapping
-    fun getTokenInfo(@RequestHeader(name = "token") token: String): TokenDto.TokenInfoResponse {
+    fun getTokenInfo(@RequestHeader(name = "token") token: String): TokenResponseDto.TokenInfo {
 
-        return tokenFacade.getTokenInfo(token)
+        return TokenResponseDto.TokenInfo(tokenFacade.getTokenInfo(token))
     }
 }

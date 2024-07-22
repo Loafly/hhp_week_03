@@ -24,7 +24,7 @@ class WalletController(private val walletFacade: WalletFacade) {
     @ApiResponses(value = [
         ApiResponse(
             responseCode = "200", description = "성공",
-            content = [Content(mediaType = "application/json", schema = Schema(implementation = WalletDto.BalanceResponse::class))]
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = WalletResponseDto.Balance::class))]
         ),
 
         ApiResponse(
@@ -52,14 +52,14 @@ class WalletController(private val walletFacade: WalletFacade) {
     fun getBalance(
         @PathVariable walletId: Long,
         @RequestParam userId: Long
-    ) : WalletDto.BalanceResponse {
-        return walletFacade.getBalance(walletId = walletId, userId = userId)
+    ) : WalletResponseDto.Balance {
+        return WalletResponseDto.Balance(walletFacade.getBalance(walletId = walletId, userId = userId))
     }
 
     @ApiResponses(value = [
         ApiResponse(
             responseCode = "200", description = "성공",
-            content = [Content(mediaType = "application/json", schema = Schema(implementation = WalletDto.BalanceResponse::class))]
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = WalletResponseDto.Balance::class))]
         ),
         ApiResponse(
             responseCode = "400", description = "요청 데이터가 잘못된 경우",
@@ -84,12 +84,14 @@ class WalletController(private val walletFacade: WalletFacade) {
     ])
     @PatchMapping("/{walletId}/charge")
     fun updateBalance(
-        @PathVariable walletId: Long, @RequestBody request: WalletDto.BalancePatchRequest
-    ): WalletDto.BalanceResponse {
-        return walletFacade.charge(
-            walletId = walletId,
-            userId = request.userId,
-            amount = request.amount
+        @PathVariable walletId: Long, @RequestBody request: WalletRequestDto.BalancePatch
+    ): WalletResponseDto.Balance {
+        return WalletResponseDto.Balance(
+            walletFacade.charge(
+                walletId = walletId,
+                userId = request.userId,
+                amount = request.amount
+            )
         )
     }
 
