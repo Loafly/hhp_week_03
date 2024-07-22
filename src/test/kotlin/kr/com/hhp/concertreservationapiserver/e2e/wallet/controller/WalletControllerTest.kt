@@ -2,10 +2,10 @@ package kr.com.hhp.concertreservationapiserver.e2e.wallet.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
-import kr.com.hhp.concertreservationapiserver.user.domain.repository.UserRepository
-import kr.com.hhp.concertreservationapiserver.user.infra.entity.UserEntity
-import kr.com.hhp.concertreservationapiserver.wallet.domain.repository.WalletRepository
-import kr.com.hhp.concertreservationapiserver.wallet.infra.entity.WalletEntity
+import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
+import kr.com.hhp.concertreservationapiserver.user.business.domain.entity.UserEntity
+import kr.com.hhp.concertreservationapiserver.wallet.business.domain.repository.WalletRepository
+import kr.com.hhp.concertreservationapiserver.wallet.business.domain.entity.WalletEntity
 import org.apache.catalina.User
 import org.junit.jupiter.api.Test
 

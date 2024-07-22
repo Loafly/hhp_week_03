@@ -1,8 +1,8 @@
 package kr.com.hhp.concertreservationapiserver.concert.infra.repository.jpa
 
 import jakarta.persistence.LockModeType
-import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertReservationStatus
-import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertSeatEntity
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertReservationStatus
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertSeatEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.jpa.repository.Query

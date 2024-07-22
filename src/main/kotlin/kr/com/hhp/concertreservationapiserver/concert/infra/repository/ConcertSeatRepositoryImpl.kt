@@ -1,8 +1,8 @@
 package kr.com.hhp.concertreservationapiserver.concert.infra.repository
 
-import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertSeatRepository
-import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertReservationStatus
-import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertSeatEntity
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertSeatRepository
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertReservationStatus
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertSeatEntity
 import kr.com.hhp.concertreservationapiserver.concert.infra.repository.jpa.ConcertSeatJpaRepository
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime

@@ -2,9 +2,9 @@ package kr.com.hhp.concertreservationapiserver.unit.concert.application
 
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
-import kr.com.hhp.concertreservationapiserver.concert.domain.service.ConcertDetailService
-import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertDetailRepository
-import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertDetailEntity
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.service.ConcertDetailService
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertDetailRepository
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertDetailEntity
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

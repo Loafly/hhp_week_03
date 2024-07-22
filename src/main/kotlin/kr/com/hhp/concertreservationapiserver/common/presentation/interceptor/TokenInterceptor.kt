@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import kr.com.hhp.concertreservationapiserver.common.annotation.RequiredInProgressToken
 import kr.com.hhp.concertreservationapiserver.common.annotation.RequiredToken
-import kr.com.hhp.concertreservationapiserver.token.application.TokenFacade
+import kr.com.hhp.concertreservationapiserver.token.business.application.TokenFacade
 import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor

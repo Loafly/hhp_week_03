@@ -1,7 +1,7 @@
 package kr.com.hhp.concertreservationapiserver.concert.infra.repository
 
-import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertDetailRepository
-import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertDetailEntity
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertDetailRepository
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertDetailEntity
 import kr.com.hhp.concertreservationapiserver.concert.infra.repository.jpa.ConcertDetailJpaRepository
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime

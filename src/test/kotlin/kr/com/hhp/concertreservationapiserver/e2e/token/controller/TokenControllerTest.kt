@@ -2,10 +2,10 @@ package kr.com.hhp.concertreservationapiserver.e2e.token.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
-import kr.com.hhp.concertreservationapiserver.token.domain.repository.TokenQueueRepository
-import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueEntity
-import kr.com.hhp.concertreservationapiserver.user.domain.repository.UserRepository
-import kr.com.hhp.concertreservationapiserver.user.infra.entity.UserEntity
+import kr.com.hhp.concertreservationapiserver.token.business.domain.repository.TokenQueueRepository
+import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueEntity
+import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
+import kr.com.hhp.concertreservationapiserver.user.business.domain.entity.UserEntity
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*

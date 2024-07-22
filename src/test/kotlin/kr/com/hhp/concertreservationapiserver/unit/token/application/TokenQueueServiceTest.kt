@@ -2,10 +2,10 @@ package kr.com.hhp.concertreservationapiserver.unit.token.application
 
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
-import kr.com.hhp.concertreservationapiserver.token.domain.repository.TokenQueueRepository
-import kr.com.hhp.concertreservationapiserver.token.domain.service.TokenQueueService
-import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueEntity
-import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueStatus
+import kr.com.hhp.concertreservationapiserver.token.business.domain.repository.TokenQueueRepository
+import kr.com.hhp.concertreservationapiserver.token.business.domain.service.TokenQueueService
+import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueEntity
+import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueStatus
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

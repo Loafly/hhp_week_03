@@ -1,7 +1,7 @@
 package kr.com.hhp.concertreservationapiserver.token.infra.repository.jpa
 
-import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueEntity
-import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueStatus
+import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueEntity
+import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueStatus
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface TokenQueueJpaRepository:JpaRepository<TokenQueueEntity, Long> {

@@ -2,11 +2,11 @@ package kr.com.hhp.concertreservationapiserver.integration.wallet.application
 
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
-import kr.com.hhp.concertreservationapiserver.user.domain.repository.UserRepository
-import kr.com.hhp.concertreservationapiserver.user.infra.entity.UserEntity
-import kr.com.hhp.concertreservationapiserver.wallet.application.WalletFacade
-import kr.com.hhp.concertreservationapiserver.wallet.domain.repository.WalletRepository
-import kr.com.hhp.concertreservationapiserver.wallet.infra.entity.WalletEntity
+import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
+import kr.com.hhp.concertreservationapiserver.user.business.domain.entity.UserEntity
+import kr.com.hhp.concertreservationapiserver.wallet.business.application.WalletFacade
+import kr.com.hhp.concertreservationapiserver.wallet.business.domain.repository.WalletRepository
+import kr.com.hhp.concertreservationapiserver.wallet.business.domain.entity.WalletEntity
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested

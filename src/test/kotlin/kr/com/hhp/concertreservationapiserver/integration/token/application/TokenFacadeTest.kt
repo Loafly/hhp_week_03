@@ -2,12 +2,12 @@ package kr.com.hhp.concertreservationapiserver.integration.token.application
 
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
-import kr.com.hhp.concertreservationapiserver.token.application.TokenFacade
-import kr.com.hhp.concertreservationapiserver.token.domain.repository.TokenQueueRepository
-import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueEntity
-import kr.com.hhp.concertreservationapiserver.token.infra.entity.TokenQueueStatus
-import kr.com.hhp.concertreservationapiserver.user.domain.repository.UserRepository
-import kr.com.hhp.concertreservationapiserver.user.infra.entity.UserEntity
+import kr.com.hhp.concertreservationapiserver.token.business.application.TokenFacade
+import kr.com.hhp.concertreservationapiserver.token.business.domain.repository.TokenQueueRepository
+import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueEntity
+import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueStatus
+import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
+import kr.com.hhp.concertreservationapiserver.user.business.domain.entity.UserEntity
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*

@@ -1,9 +1,9 @@
 package kr.com.hhp.concertreservationapiserver.unit.concert.application
 
-import kr.com.hhp.concertreservationapiserver.concert.domain.service.ConcertReservationHistoryService
-import kr.com.hhp.concertreservationapiserver.concert.domain.repository.ConcertReservationHistoryRepository
-import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertReservationHistoryEntity
-import kr.com.hhp.concertreservationapiserver.concert.infra.entity.ConcertReservationStatus
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.service.ConcertReservationHistoryService
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertReservationHistoryRepository
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertReservationHistoryEntity
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertReservationStatus
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*

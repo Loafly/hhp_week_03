@@ -1,6 +1,6 @@
 package kr.com.hhp.concertreservationapiserver.wallet.infra.repository.jpa
 
-import kr.com.hhp.concertreservationapiserver.wallet.infra.entity.WalletEntity
+import kr.com.hhp.concertreservationapiserver.wallet.business.domain.entity.WalletEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
