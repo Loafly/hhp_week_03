@@ -55,7 +55,7 @@ class WalletFacadeTest {
         fun `실패 (지갑이 없는 경우)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val walletId = 1L
+            val walletId = 0L
 
             //when
             val exception = assertThrows<CustomException> {
@@ -73,7 +73,7 @@ class WalletFacadeTest {
         @Test
         fun `실패 (사용자가 없는 경우)`() {
             //given
-            val userId = 1L
+            val userId = 0L
             val wallet = walletRepository.save(WalletEntity(userId = userId))
 
             //when
@@ -139,7 +139,7 @@ class WalletFacadeTest {
         @Test
         fun `실패 (유저가 존재하지 않는 경우)`() {
             //given
-            val userId = 1L
+            val userId = 0L
             val balance = 10000
             val wallet = walletRepository.save(WalletEntity(userId = userId, balance = balance))
             val amount = 1000
@@ -199,8 +199,8 @@ class WalletFacadeTest {
             }
 
             //then
-            assertEquals(ErrorCode.WALLET_INVALID_CHARGE_AMOUNT.message, exception.message)
-            assertEquals(ErrorCode.WALLET_INVALID_CHARGE_AMOUNT.code, exception.code)
+            assertEquals(ErrorCode.WALLET_INVALID_AMOUNT.message, exception.message)
+            assertEquals(ErrorCode.WALLET_INVALID_AMOUNT.code, exception.code)
         }
     }
 

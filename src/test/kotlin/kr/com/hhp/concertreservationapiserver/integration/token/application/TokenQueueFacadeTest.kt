@@ -50,7 +50,7 @@ class TokenQueueFacadeTest {
         @Test
         fun `실패 (유저가 존재하지 않는 경우)`() {
             //given
-            val userId = 1L
+            val userId = 0L
 
             //when
             val exception = assertThrows<CustomException> {

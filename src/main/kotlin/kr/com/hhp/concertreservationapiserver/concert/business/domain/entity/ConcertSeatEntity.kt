@@ -7,6 +7,8 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
@@ -39,11 +41,23 @@ class ConcertSeatEntity (
     @Column(name = "updated_at", nullable = false, columnDefinition = "timestamp")
     var updatedAt: LocalDateTime = LocalDateTime.now(),
 ) {
-    fun updateReservationStatusC() {
+    fun updateReservationStatusC(userId: Long) {
+        if(reservationStatus != ConcertReservationStatus.T) {
+            throw CustomException(ErrorCode.CONCERT_SEAT_IS_NOT_TEMPORARY_STATUS)
+        }
+
+        if(this.userId != userId) {
+            throw CustomException(ErrorCode.CONCERT_USER_ID_IS_MIS_MATCH)
+        }
+
         this.reservationStatus = ConcertReservationStatus.C
     }
 
     fun updateReservationStatusT(userId: Long) {
+        if(reservationStatus != ConcertReservationStatus.A) {
+            throw CustomException(ErrorCode.CONCERT_SEAT_ALREADY_RESERVED)
+        }
+
         this.userId = userId
         this.reservationStatus = ConcertReservationStatus.T
     }

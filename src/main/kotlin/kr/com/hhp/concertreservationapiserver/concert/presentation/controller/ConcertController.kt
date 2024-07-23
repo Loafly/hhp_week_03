@@ -58,7 +58,6 @@ class ConcertController(private val concertFacade: ConcertFacade) {
                          @RequestParam(name = "reservationDateTime") reservationDateTime: LocalDateTime): List<ConcertResponseDto.Detail> {
 
         return concertFacade.getAllAvailableReservationDetail(
-            token = token,
             concertId = concertId,
             reservationDateTime = reservationDateTime
         ).map { ConcertResponseDto.Detail(it) }
@@ -95,7 +94,7 @@ class ConcertController(private val concertFacade: ConcertFacade) {
     fun getConcertSeat(@PathVariable("concertDetailId") concertDetailId: Long,
                        @RequestHeader(name = "token") token: String): List<ConcertResponseDto.Seat> {
 
-        return concertFacade.getAllAvailableReservationSeat(token = token, concertDetailId = concertDetailId)
+        return concertFacade.getAllAvailableReservationSeat(concertDetailId = concertDetailId)
             .map { ConcertResponseDto.Seat(it) }
     }
 

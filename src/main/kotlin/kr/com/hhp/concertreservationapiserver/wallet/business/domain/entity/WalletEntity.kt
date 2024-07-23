@@ -6,6 +6,9 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
+import kr.com.hhp.concertreservationapiserver.wallet.business.application.WalletDto
 
 @Entity
 @Table(name = "wallet")
@@ -21,7 +24,22 @@ class WalletEntity (
     @Column(name = "balance", nullable = false)
     var balance: Int = 0,
 ) {
-    fun updateBalance(amount: Int) {
-        balance += amount
+    fun updateBalance(amount: Int, balanceType: WalletBalanceType) {
+
+        if(balanceType == WalletBalanceType.U) {
+            balance -= amount
+        } else if (balanceType == WalletBalanceType.C) {
+            balance += amount
+        }
+
+        if(balance < 0) {
+            throw CustomException(ErrorCode.WALLET_INVALID_BALANCE)
+        }
+    }
+
+    fun throwExceptionIfMisMatchUserId(userId: Long) {
+        if(this.userId != userId) {
+            throw CustomException(ErrorCode.WALLET_USER_ID_IS_MIS_MATCH)
+        }
     }
 }
