@@ -18,28 +18,4 @@ class WalletService(private val walletRepository: WalletRepository) {
         return walletRepository.findByUserId(userId)
             ?: throw CustomException(ErrorCode.WALLET_NOT_FOUND)
     }
-
-    fun charge(walletId: Long, userId: Long, amount:Int): WalletEntity {
-        val wallet = getByWalletId(walletId)
-        throwExceptionIfMisMatchUserId(wallet, userId)
-
-        if(amount < 0) {
-            throw CustomException(ErrorCode.WALLET_INVALID_CHARGE_AMOUNT)
-        }
-
-        wallet.updateBalance(amount)
-        return walletRepository.save(wallet)
-    }
-
-    fun throwExceptionIfMisMatchUserId(wallet: WalletEntity, userId: Long) {
-        if(userId != wallet.userId) {
-            throw CustomException(ErrorCode.WALLET_USER_ID_IS_MIS_MATCH)
-        }
-    }
-
-    fun useBalance(userId: Long, amount: Int): WalletEntity {
-        val wallet = getByUserId(userId)
-        wallet.updateBalance(-amount)
-        return walletRepository.save(wallet)
-    }
 }

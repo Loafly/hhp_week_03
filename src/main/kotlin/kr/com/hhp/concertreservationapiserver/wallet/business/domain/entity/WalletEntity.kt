@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 
 @Entity
 @Table(name = "wallet")
@@ -23,5 +25,11 @@ class WalletEntity (
 ) {
     fun updateBalance(amount: Int) {
         balance += amount
+    }
+
+    fun throwExceptionIfMisMatchUserId(userId: Long) {
+        if(this.userId != userId) {
+            throw CustomException(ErrorCode.WALLET_USER_ID_IS_MIS_MATCH)
+        }
     }
 }

@@ -59,9 +59,6 @@ class ConcertFacadeTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given
-            val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
-
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -73,7 +70,7 @@ class ConcertFacadeTest {
 
             //when
             val reservationDetails = concertFacade.getAllAvailableReservationDetail(
-                token = tokenQueue.token, concertId = concert.concertId!!, reservationDateTime = LocalDateTime.now()
+                concertId = concert.concertId!!, reservationDateTime = LocalDateTime.now()
             )
 
             val reservationDetail = reservationDetails[0]
@@ -89,15 +86,12 @@ class ConcertFacadeTest {
         @Test
         fun `실패 (콘서트가 존재하지 않는 경우)`() {
             //given
-            val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
-
             val concertId = 1L
 
             //when
             val exception = assertThrows<CustomException> {
                 concertFacade.getAllAvailableReservationDetail(
-                    token = tokenQueue.token, concertId = concertId, reservationDateTime = LocalDateTime.now()
+                    concertId = concertId, reservationDateTime = LocalDateTime.now()
                 )
             }
 
@@ -114,9 +108,6 @@ class ConcertFacadeTest {
         @Test
         fun `성공 (정상 케이스)`() {
             //given
-            val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
-
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -133,7 +124,7 @@ class ConcertFacadeTest {
 
             //when
             val availableReservationSeats = concertFacade.getAllAvailableReservationSeat(
-                token = tokenQueue.token, concertDetailId = concertDetail.concertDetailId!!
+                concertDetailId = concertDetail.concertDetailId!!
             )
             val availableReservationSeat = availableReservationSeats[0]
 
@@ -149,14 +140,12 @@ class ConcertFacadeTest {
         @Test
         fun `실패 (콘서트 상세가 존재하지 않는 경우)`() {
             //given
-            val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
             val concertDetailId = 1L
 
             //when
             val exception = assertThrows<CustomException> {
                 concertFacade.getAllAvailableReservationSeat(
-                    token = tokenQueue.token, concertDetailId = concertDetailId
+                    concertDetailId = concertDetailId
                 )
             }
 
@@ -384,7 +373,7 @@ class ConcertFacadeTest {
             //given
             val user = userRepository.save(UserEntity())
             val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
-            val wallet = walletRepository.save(WalletEntity(userId = user.userId!!))
+            walletRepository.save(WalletEntity(userId = user.userId!!))
 
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
@@ -421,6 +410,7 @@ class ConcertFacadeTest {
             //given
             val user = userRepository.save(UserEntity())
             val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            walletRepository.save(WalletEntity(userId = user.userId!!))
             val concertSeatId = 1L
 
             //when
@@ -440,7 +430,7 @@ class ConcertFacadeTest {
             //given
             val user = userRepository.save(UserEntity())
             val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
-            val wallet = walletRepository.save(WalletEntity(userId = user.userId!!))
+            walletRepository.save(WalletEntity(userId = user.userId!!))
 
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
@@ -477,7 +467,7 @@ class ConcertFacadeTest {
             //given
             val user = userRepository.save(UserEntity())
             val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
-            val wallet = walletRepository.save(WalletEntity(userId = user.userId!!))
+            walletRepository.save(WalletEntity(userId = user.userId!!))
             val concertUser = userRepository.save(UserEntity())
 
             val concert = concertRepository.save(ConcertEntity())
@@ -511,6 +501,4 @@ class ConcertFacadeTest {
         }
 
     }
-
-
 }

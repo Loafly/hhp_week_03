@@ -28,40 +28,6 @@ class ConcertSeatService(private val concertSeatRepository : ConcertSeatReposito
             ?: throw CustomException(ErrorCode.CONCERT_SEAT_NOT_FOUND)
     }
 
-    fun payForTemporaryReservedSeatToConfirmedReserved(concertSeatId: Long, userId: Long): ConcertSeatEntity {
-        val concertSeat = getByConcertSeatId(concertSeatId)
-        throwExceptionIfStatusIsNotTemporary(concertSeat)
-        throwExceptionIfMisMatchUserId(concertSeat = concertSeat, userId = userId)
-        concertSeat.updateReservationStatusC()
-        return concertSeatRepository.save(concertSeat)
-    }
-
-    fun reserveSeatToTemporary(concertSeatId: Long, userId: Long): ConcertSeatEntity {
-        val concertSeat = getByConcertSeatId(concertSeatId)
-        throwExceptionIfStatusIsNotAvailable(concertSeat)
-
-        concertSeat.updateReservationStatusT(userId)
-        return concertSeatRepository.save(concertSeat)
-    }
-
-    private fun throwExceptionIfStatusIsNotTemporary(concertSeatEntity: ConcertSeatEntity){
-        if(concertSeatEntity.reservationStatus != ConcertReservationStatus.T) {
-            throw CustomException(ErrorCode.CONCERT_SEAT_IS_NOT_TEMPORARY_STATUS)
-        }
-    }
-
-    private fun throwExceptionIfStatusIsNotAvailable(concertSeat: ConcertSeatEntity){
-        if(concertSeat.reservationStatus != ConcertReservationStatus.A) {
-            throw CustomException(ErrorCode.CONCERT_SEAT_ALREADY_RESERVED)
-        }
-    }
-
-    private fun throwExceptionIfMisMatchUserId(concertSeat: ConcertSeatEntity, userId: Long){
-        if(concertSeat.userId != userId) {
-            throw CustomException(ErrorCode.CONCERT_USER_ID_IS_MIS_MATCH)
-        }
-    }
-
     fun releaseExpiredReservations(): List<ConcertSeatEntity> {
 
         val expiredConcertSeats = getAllExpiredReservationTemporaries()

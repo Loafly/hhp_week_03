@@ -13,6 +13,4 @@ class ConcertService(private val concertRepository: ConcertRepository) {
         return concertRepository.findByConcertId(concertId)
             ?: throw CustomException(ErrorCode.CONCERT_NOT_FOUND)
     }
-
-
 }

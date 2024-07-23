@@ -25,19 +25,4 @@ class ConcertDetailService(private val concertDetailRepository: ConcertDetailRep
         return concertDetailRepository.findByConcertDetailId(concertDetailId)
             ?: throw CustomException(ErrorCode.CONCERT_DETAIL_NOT_FOUND)
     }
-
-    fun throwExceptionIfNotReservationPeriod(concertDetailEntity: ConcertDetailEntity) {
-
-        // 예약 기간이 시작되지 않은 경우
-        if(concertDetailEntity.reservationStartDateTime.isAfter(LocalDateTime.now())) {
-            throw CustomException(ErrorCode.CONCERT_RESERVATION_PERIOD_EARLY)
-        }
-
-        // 예약 기간이 끝난 경우
-        if(concertDetailEntity.reservationEndDateTime.isBefore(LocalDateTime.now())) {
-            throw CustomException(ErrorCode.CONCERT_RESERVATION_PERIOD_LATE)
-        }
-    }
-
-
 }

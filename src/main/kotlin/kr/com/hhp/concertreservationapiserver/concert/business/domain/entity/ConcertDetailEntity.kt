@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
+import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import java.time.LocalDateTime
 
 @Table
@@ -31,4 +33,16 @@ class ConcertDetailEntity (
     @Column(name = "reservation_end_date_time", nullable = false)
     val reservationEndDateTime: LocalDateTime,
 
-)
+) {
+    fun throwExceptionIfNotReservationPeriod() {
+        // 예약 기간이 시작되지 않은 경우
+        if(reservationStartDateTime.isAfter(LocalDateTime.now())) {
+            throw CustomException(ErrorCode.CONCERT_RESERVATION_PERIOD_EARLY)
+        }
+
+        // 예약 기간이 끝난 경우
+        if(reservationEndDateTime.isBefore(LocalDateTime.now())) {
+            throw CustomException(ErrorCode.CONCERT_RESERVATION_PERIOD_LATE)
+        }
+    }
+}

@@ -2,9 +2,9 @@ package kr.com.hhp.concertreservationapiserver.unit.concert.application
 
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
-import kr.com.hhp.concertreservationapiserver.concert.business.domain.service.ConcertDetailService
-import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertDetailRepository
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertDetailEntity
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertDetailRepository
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.service.ConcertDetailService
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -121,48 +121,6 @@ class ConcertDetailServiceTest {
             then(concertDetailRepository).should().findByConcertDetailId(concertDetailId)
             assertEquals(ErrorCode.CONCERT_DETAIL_NOT_FOUND.message, exception.message)
             assertEquals(ErrorCode.CONCERT_DETAIL_NOT_FOUND.code, exception.code)
-        }
-    }
-
-    @Nested
-    @DisplayName("콘서트 상세 조회")
-    inner class ThrowExceptionIfNotReservationPeriod {
-        @Test
-        fun `실패 (예약 기간이 시작되지 않은 경우)`() {
-            //given
-            val concertDetailEntity = ConcertDetailEntity(
-                concertId = 1L,
-                reservationStartDateTime = LocalDateTime.now().plusDays(5),
-                reservationEndDateTime = LocalDateTime.now().plusDays(10),
-            )
-
-            //when
-            val exception = assertThrows<CustomException> {
-                concertDetailService.throwExceptionIfNotReservationPeriod(concertDetailEntity)
-            }
-
-            //then
-            assertEquals(ErrorCode.CONCERT_RESERVATION_PERIOD_EARLY.message, exception.message)
-            assertEquals(ErrorCode.CONCERT_RESERVATION_PERIOD_EARLY.code, exception.code)
-        }
-
-        @Test
-        fun `실패 (예약 기간이 끝난 경우)`() {
-            //given
-            val concertDetailEntity = ConcertDetailEntity(
-                concertId = 1L,
-                reservationStartDateTime = LocalDateTime.now().minusDays(10),
-                reservationEndDateTime = LocalDateTime.now().minusDays(5),
-            )
-
-            //when
-            val exception = assertThrows<CustomException> {
-                concertDetailService.throwExceptionIfNotReservationPeriod(concertDetailEntity)
-            }
-
-            //then
-            assertEquals(ErrorCode.CONCERT_RESERVATION_PERIOD_LATE.message, exception.message)
-            assertEquals(ErrorCode.CONCERT_RESERVATION_PERIOD_LATE.code, exception.code)
         }
     }
 }
