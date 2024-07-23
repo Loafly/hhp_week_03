@@ -21,7 +21,7 @@ import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 @ExtendWith(MockitoExtension::class)
-class ConcertDtoSeatServiceTest {
+class ConcertSeatServiceTest {
 
     @Mock
     private lateinit var concertSeatRepository: ConcertSeatRepository

@@ -31,7 +31,7 @@ import java.time.LocalDateTime
 @Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
-class ConcertDtoControllerTest {
+class ConcertControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc

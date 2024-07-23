@@ -17,7 +17,7 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.then
 
 @ExtendWith(MockitoExtension::class)
-class ConcertDtoSeatPaymentHistoryServiceTest {
+class ConcertSeatPaymentHistoryServiceTest {
 
     @Mock
     private lateinit var concertSeatPaymentHistoryRepository: ConcertSeatPaymentHistoryRepository

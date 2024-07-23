@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 @ExtendWith(MockitoExtension::class)
-class ConcertDtoDetailServiceTest {
+class ConcertDetailServiceTest {
 
     @Mock
     private lateinit var concertDetailRepository: ConcertDetailRepository

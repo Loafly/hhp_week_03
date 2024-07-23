@@ -24,7 +24,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 @ExtendWith(MockitoExtension::class)
-class TokenQueueQueueServiceTest {
+class TokenQueueServiceTest {
 
     @Mock
     private lateinit var tokenQueueRepository: TokenQueueRepository

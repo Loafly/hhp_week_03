@@ -30,7 +30,7 @@ import java.time.LocalDateTime
 
 @Transactional
 @SpringBootTest
-class ConcertDtoFacadeTest {
+class ConcertFacadeTest {
 
     @Autowired
     private lateinit var concertFacade: ConcertFacade
@@ -106,7 +106,6 @@ class ConcertDtoFacadeTest {
             assertEquals(ErrorCode.CONCERT_NOT_FOUND.code, exception.code)
         }
     }
-
 
 
     @Nested
