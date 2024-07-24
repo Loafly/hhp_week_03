@@ -6,10 +6,8 @@ import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.Us
 import kr.com.hhp.concertreservationapiserver.user.business.domain.entity.UserEntity
 import kr.com.hhp.concertreservationapiserver.wallet.business.domain.repository.WalletRepository
 import kr.com.hhp.concertreservationapiserver.wallet.business.domain.entity.WalletEntity
-import org.apache.catalina.User
 import org.junit.jupiter.api.Test
 
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.springframework.beans.factory.annotation.Autowired
@@ -247,8 +245,8 @@ class WalletControllerTest {
             //then
             perform
                 .andExpect(status().isBadRequest)
-                .andExpect(jsonPath("$.message").value(ErrorCode.WALLET_INVALID_CHARGE_AMOUNT.message))
-                .andExpect(jsonPath("$.code").value(ErrorCode.WALLET_INVALID_CHARGE_AMOUNT.code))
+                .andExpect(jsonPath("$.message").value(ErrorCode.WALLET_INVALID_AMOUNT.message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.WALLET_INVALID_AMOUNT.code))
         }
     }
 }

@@ -30,7 +30,10 @@ class WalletHistoryEntity (
     @Column(name = "balance", nullable = false)
     var balance: Int,
 
+    @Column(name = "balance_type", nullable = false)
+    val balanceType: WalletBalanceType,
+
     @CreatedDate
-    @Column(name = "created_at", nullable = false, columnDefinition = "timestamp default current_timestamp")
+    @Column(name = "created_at", nullable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),
 )

@@ -1,9 +1,9 @@
 package kr.com.hhp.concertreservationapiserver.concert.business.application
 
 import kr.com.hhp.concertreservationapiserver.common.annotation.Facade
-import kr.com.hhp.concertreservationapiserver.concert.business.domain.service.ConcertBaseService
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.service.ConcertService
 import kr.com.hhp.concertreservationapiserver.token.business.domain.service.TokenQueueService
-import kr.com.hhp.concertreservationapiserver.wallet.business.domain.service.WalletHistoryService
+import kr.com.hhp.concertreservationapiserver.wallet.business.domain.entity.WalletBalanceType
 import kr.com.hhp.concertreservationapiserver.wallet.business.domain.service.WalletService
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -12,15 +12,14 @@ import java.time.LocalDateTime
 class ConcertFacade(
     private val tokenQueueService: TokenQueueService,
     private val walletService: WalletService,
-    private val walletHistoryService: WalletHistoryService,
-    private val concertBaseService: ConcertBaseService
+    private val concertService: ConcertService,
 ) {
 
     // 예약 가능 날짜 조회
     @Transactional(readOnly = true)
     fun getAllAvailableReservationDetail(concertId: Long, reservationDateTime: LocalDateTime): List<ConcertDto.Detail> {
 
-        return concertBaseService.getAllAvailableReservationDetail(
+        return concertService.getAllAvailableReservationDetail(
             concertId = concertId, reservationDateTime = reservationDateTime
         ).map {
             ConcertDto.Detail(
@@ -37,7 +36,7 @@ class ConcertFacade(
     @Transactional(readOnly = true)
     fun getAllAvailableReservationSeat(concertDetailId: Long): List<ConcertDto.Seat> {
 
-        return concertBaseService.getAllAvailableReservationSeat(concertDetailId)
+        return concertService.getAllAvailableReservationSeat(concertDetailId)
             .map { ConcertDto.Seat(
                 concertSeatId = it.concertSeatId!!,
                 seatNumber = it.seatNumber,
@@ -50,7 +49,7 @@ class ConcertFacade(
     @Transactional
     fun reserveSeatToTemporary(token: String, concertSeatId: Long): ConcertDto.Seat {
         val tokenQueue = tokenQueueService.getByToken(token)
-        val concertSeat = concertBaseService.reserveSeatToTemporary(concertSeatId, tokenQueue.userId)
+        val concertSeat = concertService.reserveSeatToTemporary(concertSeatId, tokenQueue.userId)
 
         return ConcertDto.Seat(
             concertSeat.concertSeatId!!,
@@ -65,14 +64,15 @@ class ConcertFacade(
     fun payForTemporaryReservedSeatToConfirmedReservation(token: String, concertSeatId: Long) {
         val tokenQueue = tokenQueueService.getByToken(token)
         val wallet = walletService.getByUserId(userId = tokenQueue.userId)
-        val concertSeat = concertBaseService.payForTemporaryReservedSeatToConfirmedReservation(
+        val concertSeat = concertService.payForTemporaryReservedSeatToConfirmedReservation(
             concertSeatId, tokenQueue.userId, wallet.walletId!!
         )
 
-        walletHistoryService.create(
+        walletService.updateBalance(
             walletId = wallet.walletId!!,
-            balance = wallet.balance,
-            amount = -concertSeat.price
+            userId = tokenQueue.userId,
+            amount = concertSeat.price,
+            balanceType = WalletBalanceType.U
         )
     }
 }
