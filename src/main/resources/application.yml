@@ -8,11 +8,12 @@ spring:
     url: jdbc:mysql://localhost:3306/concert_reservation
     username: root
     password:
+    hikari:
+      maximum-pool-size: 20 # 기본값 : 10 (최대 20개의 쓰레드가 DB ConnectionPool을 가지고 동시에 처리하는 테스트 가능)
   jpa:
     hibernate:
       ddl-auto: create
-    show-sql: true
-
+#    show-sql: true
 
 springdoc:
   api-docs:

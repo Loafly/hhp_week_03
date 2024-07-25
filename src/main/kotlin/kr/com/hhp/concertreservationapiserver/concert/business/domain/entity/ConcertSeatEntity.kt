@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import jakarta.persistence.Version
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import org.springframework.data.annotation.LastModifiedDate
@@ -40,6 +41,9 @@ class ConcertSeatEntity (
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false, columnDefinition = "timestamp")
     var updatedAt: LocalDateTime = LocalDateTime.now(),
+
+    @Version
+    var version: Long = 0
 ) {
     fun updateReservationStatusC(userId: Long) {
         if(reservationStatus != ConcertReservationStatus.T) {
