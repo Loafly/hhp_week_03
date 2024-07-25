@@ -12,6 +12,10 @@ class WalletRepositoryImpl(private val walletJpaRepository: WalletJpaRepository)
         return walletJpaRepository.findByWalletId(walletId)
     }
 
+    override fun findByWalletIdWithXLock(walletId: Long): WalletEntity? {
+        return walletJpaRepository.findByWalletIdWithXLock(walletId)
+    }
+
     override fun findByUserId(userId: Long): WalletEntity? {
         return walletJpaRepository.findByUserId(userId)
     }

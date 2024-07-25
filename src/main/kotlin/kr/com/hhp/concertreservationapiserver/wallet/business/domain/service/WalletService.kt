@@ -32,7 +32,7 @@ class WalletService(private val walletRepository: WalletRepository,
             throw CustomException(ErrorCode.WALLET_INVALID_AMOUNT)
         }
 
-        val wallet = walletRepository.findByWalletId(walletId) ?: throw CustomException(ErrorCode.WALLET_NOT_FOUND)
+        val wallet = walletRepository.findByWalletIdWithXLock(walletId) ?: throw CustomException(ErrorCode.WALLET_NOT_FOUND)
         wallet.throwExceptionIfMisMatchUserId(userId)
         wallet.updateBalance(amount, balanceType)
 
