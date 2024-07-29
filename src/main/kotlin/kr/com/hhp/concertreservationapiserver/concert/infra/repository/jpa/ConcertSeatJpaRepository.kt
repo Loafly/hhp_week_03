@@ -16,9 +16,9 @@ interface ConcertSeatJpaRepository: JpaRepository<ConcertSeatEntity, Long> {
 
     fun findByConcertSeatId(concertSeatId: Long): ConcertSeatEntity?
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE) //concertSeatId가 동일한 데이터만 비관적 Lock
+    @Lock(LockModeType.PESSIMISTIC_READ)
     @Query("SELECT concertSeat FROM concert_seat as concertSeat WHERE concertSeat.concertSeatId = :concertSeatId")
-    fun findByConcertSeatIdWithXLock(concertSeatId: Long): ConcertSeatEntity?
+    fun findByConcertSeatIdWithSLock(concertSeatId: Long): ConcertSeatEntity?
 
     fun findAllByReservationStatusAndUpdatedAtIsAfter(status: ConcertReservationStatus, date: LocalDateTime): List<ConcertSeatEntity>
 }

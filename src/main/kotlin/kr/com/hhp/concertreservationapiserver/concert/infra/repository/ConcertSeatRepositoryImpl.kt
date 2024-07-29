@@ -23,8 +23,8 @@ class ConcertSeatRepositoryImpl(private val concertSeatJpaRepository: ConcertSea
         return concertSeatJpaRepository.findByConcertSeatId(concertSeatId)
     }
 
-    override fun findByConcertSeatIdWithXLock(concertSeatId: Long): ConcertSeatEntity? {
-        return concertSeatJpaRepository.findByConcertSeatIdWithXLock(concertSeatId)
+    override fun findByConcertSeatIdWithSLock(concertSeatId: Long): ConcertSeatEntity? {
+        return concertSeatJpaRepository.findByConcertSeatIdWithSLock(concertSeatId)
     }
 
     override fun save(concertSeatEntity: ConcertSeatEntity): ConcertSeatEntity {
