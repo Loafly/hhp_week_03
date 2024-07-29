@@ -3,17 +3,18 @@ package kr.com.hhp.concertreservationapiserver.concert.business.domain.service
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertDetailEntity
-import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertRepository
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertReservationHistoryEntity
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertReservationStatus
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertSeatEntity
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertSeatPaymentHistoryEntity
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertDetailRepository
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertRepository
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertReservationHistoryRepository
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertSeatPaymentHistoryRepository
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertSeatRepository
-import kr.com.hhp.concertreservationapiserver.concert.infra.repository.ConcertSeatPaymentHistoryRepositoryImpl
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
@@ -52,8 +53,9 @@ class ConcertService(
 
 
     // 좌석 임시 예약
+    @Transactional
     fun reserveSeatToTemporary(concertSeatId: Long, userId: Long) : ConcertSeatEntity {
-        val concertSeat = concertSeatRepository.findByConcertSeatIdWithXLock(concertSeatId) ?: throw CustomException(ErrorCode.CONCERT_SEAT_NOT_FOUND)
+        val concertSeat = concertSeatRepository.findByConcertSeatIdWithSLock(concertSeatId) ?: throw CustomException(ErrorCode.CONCERT_SEAT_NOT_FOUND)
         val concertDetail = concertDetailRepository.findByConcertDetailId(concertSeat.concertDetailId) ?: throw CustomException(ErrorCode.CONCERT_DETAIL_NOT_FOUND)
         concertDetail.throwExceptionIfNotReservationPeriod();
 
@@ -71,7 +73,7 @@ class ConcertService(
 
     //예약된 좌석 결제
     fun payForTemporaryReservedSeatToConfirmedReservation(concertSeatId: Long, userId: Long, walletId: Long): ConcertSeatEntity {
-        val concertSeat = concertSeatRepository.findByConcertSeatIdWithXLock(concertSeatId) ?: throw CustomException(ErrorCode.CONCERT_SEAT_NOT_FOUND)
+        val concertSeat = concertSeatRepository.findByConcertSeatId(concertSeatId) ?: throw CustomException(ErrorCode.CONCERT_SEAT_NOT_FOUND)
         concertSeat.updateReservationStatusC(userId)
 
         val concertReservationHistory = ConcertReservationHistoryEntity(

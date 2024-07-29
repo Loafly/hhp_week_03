@@ -10,8 +10,8 @@ import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomExce
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.wallet.business.application.WalletDto
 
-@Entity
-@Table(name = "wallet")
+@Table
+@Entity(name = "wallet")
 class WalletEntity (
 
     @Id

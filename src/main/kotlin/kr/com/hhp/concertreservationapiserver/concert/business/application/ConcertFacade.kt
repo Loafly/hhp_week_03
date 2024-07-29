@@ -1,5 +1,6 @@
 package kr.com.hhp.concertreservationapiserver.concert.business.application
 
+import kr.com.hhp.concertreservationapiserver.common.annotation.DistributedSimpleLock
 import kr.com.hhp.concertreservationapiserver.common.annotation.Facade
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.service.ConcertService
 import kr.com.hhp.concertreservationapiserver.token.business.domain.service.TokenQueueService
@@ -46,7 +47,7 @@ class ConcertFacade(
     }
 
     // 좌석 임시 예약
-    @Transactional
+    @DistributedSimpleLock(key = "'concertSeatId:' + #concertSeatId")
     fun reserveSeatToTemporary(token: String, concertSeatId: Long): ConcertDto.Seat {
         val tokenQueue = tokenQueueService.getByToken(token)
         val concertSeat = concertService.reserveSeatToTemporary(concertSeatId, tokenQueue.userId)

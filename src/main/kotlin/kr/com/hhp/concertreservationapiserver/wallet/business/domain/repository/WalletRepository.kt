@@ -5,6 +5,7 @@ import kr.com.hhp.concertreservationapiserver.wallet.business.domain.entity.Wall
 
 interface WalletRepository {
     fun findByWalletId(walletId: Long): WalletEntity?
+    fun findByWalletIdWithXLock(walletId: Long): WalletEntity?
     fun findByUserId(userId: Long): WalletEntity?
     fun save(walletEntity: WalletEntity): WalletEntity
 }

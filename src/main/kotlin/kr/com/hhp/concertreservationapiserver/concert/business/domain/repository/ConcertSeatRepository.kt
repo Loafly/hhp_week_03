@@ -10,7 +10,7 @@ interface ConcertSeatRepository {
     ): List<ConcertSeatEntity>
 
     fun findByConcertSeatId(concertSeatId: Long): ConcertSeatEntity?
-    fun findByConcertSeatIdWithXLock(concertSeatId: Long): ConcertSeatEntity?
+    fun findByConcertSeatIdWithSLock(concertSeatId: Long): ConcertSeatEntity?
 
     fun save(concertSeatEntity: ConcertSeatEntity): ConcertSeatEntity
     fun saveAll(concertSeats: List<ConcertSeatEntity>): List<ConcertSeatEntity>
