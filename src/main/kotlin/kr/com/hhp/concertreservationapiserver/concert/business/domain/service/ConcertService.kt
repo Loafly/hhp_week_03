@@ -13,7 +13,6 @@ import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertSeatPaymentHistoryRepository
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertSeatRepository
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
@@ -60,14 +59,15 @@ class ConcertService(
         concertDetail.throwExceptionIfNotReservationPeriod();
 
         concertSeat.updateReservationStatusT(userId)
+        concertDetail.reserveSeat()
 
         val concertReservationHistory = ConcertReservationHistoryEntity(
             concertSeatId = concertSeatId,
             status = concertSeat.reservationStatus
         )
 
+        concertDetailRepository.save(concertDetail)
         concertReservationHistoryRepository.save(concertReservationHistory)
-
         return concertSeatRepository.save(concertSeat)
     }
 
@@ -94,10 +94,18 @@ class ConcertService(
     // 콘서트 예약 시간 초과시 만료 처리
     fun releaseExpiredReservations() {
         val expiredConcertSeats = concertSeatRepository.findAllByReservationStatusAndUpdatedAtIsAfter(
-            ConcertReservationStatus.T, LocalDateTime.now().minusMinutes(30)
+            ConcertReservationStatus.T, LocalDateTime.now().plusMinutes(30)
         ).onEach {it.expiredTemporaryReservation()}
 
         val concertSeats = concertSeatRepository.saveAll(expiredConcertSeats)
+
+        // 콘서트 DetailId와 각각의 release된 개수
+        val concertDetailIdAndCountMap = concertSeats.groupingBy { it.concertDetailId }.eachCount()
+        val concertDetails =
+            concertDetailRepository.findAllByConcertDetailIdInWithXLock(concertDetailIdAndCountMap.map { it.key })
+
+        concertDetails.onEach { concertDetailIdAndCountMap[it.concertDetailId]?.let { it1 -> it.releaseSeat(it1) } }
+        concertDetailRepository.saveAll(concertDetails)
 
         val concertReservationHistories = concertSeats.map {
             ConcertReservationHistoryEntity(

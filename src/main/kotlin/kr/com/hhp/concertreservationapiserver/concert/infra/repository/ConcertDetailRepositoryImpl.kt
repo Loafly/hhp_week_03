@@ -13,6 +13,10 @@ class ConcertDetailRepositoryImpl(private val concertDetailJpaRepository: Concer
         return concertDetailJpaRepository.save(concertDetailEntity)
     }
 
+    override fun saveAll(concertDetailEntityList: List<ConcertDetailEntity>): List<ConcertDetailEntity> {
+        return concertDetailJpaRepository.saveAll(concertDetailEntityList)
+    }
+
     override fun findAllByConcertIdAndRemainingSeatCountNotAndReservationStartDateTimeIsBeforeAndReservationEndDateTimeIsAfter(
         concertId: Long,
         remainingSeatCount: Int,
@@ -29,5 +33,9 @@ class ConcertDetailRepositoryImpl(private val concertDetailJpaRepository: Concer
 
     override fun findByConcertDetailId(concertDetailId: Long): ConcertDetailEntity? {
         return concertDetailJpaRepository.findByConcertDetailId(concertDetailId)
+    }
+
+    override fun findAllByConcertDetailIdInWithXLock(concertDetailIds: List<Long>): List<ConcertDetailEntity> {
+        return concertDetailJpaRepository.findAllByConcertDetailIdInWithXLock(concertDetailIds)
     }
 }

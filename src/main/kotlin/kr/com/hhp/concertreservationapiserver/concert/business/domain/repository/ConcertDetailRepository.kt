@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 interface ConcertDetailRepository {
 
     fun save(concertDetailEntity: ConcertDetailEntity): ConcertDetailEntity
+    fun saveAll(concertDetailEntityList: List<ConcertDetailEntity>): List<ConcertDetailEntity>
 
     fun findAllByConcertIdAndRemainingSeatCountNotAndReservationStartDateTimeIsBeforeAndReservationEndDateTimeIsAfter(
         concertId: Long,
@@ -15,4 +16,6 @@ interface ConcertDetailRepository {
     ): List<ConcertDetailEntity>
 
     fun findByConcertDetailId(concertDetailId: Long): ConcertDetailEntity?
+
+    fun findAllByConcertDetailIdInWithXLock(concertDetailIds: List<Long>): List<ConcertDetailEntity>
 }

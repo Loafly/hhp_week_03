@@ -34,6 +34,15 @@ class ConcertDetailEntity (
     val reservationEndDateTime: LocalDateTime,
 
 ) {
+
+    fun reserveSeat() {
+        remainingSeatCount--
+    }
+
+    fun releaseSeat(count: Int) {
+        remainingSeatCount += count
+    }
+
     fun throwExceptionIfNotReservationPeriod() {
         // 예약 기간이 시작되지 않은 경우
         if(reservationStartDateTime.isAfter(LocalDateTime.now())) {
