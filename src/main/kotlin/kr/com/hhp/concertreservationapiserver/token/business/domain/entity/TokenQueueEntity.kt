@@ -44,31 +44,4 @@ class TokenQueueEntity (
 
     @Column(name = "fail_reason")
     var failReason: String? = null,
-) {
-    fun isExpired() :Boolean {
-        if(status == TokenQueueStatus.C || status == TokenQueueStatus.F) {
-            return true;
-        }
-
-        if(status == TokenQueueStatus.P) {
-            val currentTime = LocalDateTime.now()
-            // P로 업데이트된 시간이 30분이 지난 경우
-            return currentTime.minusMinutes(30).isBefore(updatedAt)
-        }
-
-        return false
-    }
-
-    fun expireToken() {
-        status = TokenQueueStatus.F
-        failReason = "시간초과...."
-    }
-
-    fun updateToInProgress() {
-        status = TokenQueueStatus.P
-    }
-
-    fun isStatusInProgress(): Boolean {
-        return this.status == TokenQueueStatus.P
-    }
-}
+)

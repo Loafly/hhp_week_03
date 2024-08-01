@@ -3,19 +3,21 @@ package kr.com.hhp.concertreservationapiserver.integration.token.application
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.token.business.application.TokenFacade
-import kr.com.hhp.concertreservationapiserver.token.business.domain.repository.TokenQueueRepository
 import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueEntity
 import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueStatus
+import kr.com.hhp.concertreservationapiserver.token.infra.repository.redis.TokenQueueRedisRepository
 import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
 import kr.com.hhp.concertreservationapiserver.user.business.domain.entity.UserEntity
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -23,13 +25,24 @@ import org.springframework.transaction.annotation.Transactional
 class TokenQueueFacadeTest {
 
     @Autowired
+    private lateinit var redisTemplate: RedisTemplate<String, String>
+
+    @Autowired
     private lateinit var tokenFacade: TokenFacade
 
     @Autowired
-    private lateinit var tokenQueueRepository: TokenQueueRepository
+    private lateinit var tokenQueueRepository: TokenQueueRedisRepository
 
     @Autowired
     private lateinit var userRepository: UserRepository
+
+    @BeforeEach
+    fun setup() {
+        redisTemplate.execute { connection ->
+            connection.serverCommands().flushAll()
+            null
+        }
+    }
 
     @Nested
     @DisplayName("토큰 발급")
@@ -70,26 +83,26 @@ class TokenQueueFacadeTest {
         fun `성공 (정상 케이스)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
 
             //when
-            val tokenInfo = tokenFacade.getTokenInfo(token = tokenQueue.token)
+            val tokenInfo = tokenFacade.getTokenInfo(token = token)
 
             //then
             assertNotNull(tokenInfo)
-            assertEquals(tokenQueue.userId, tokenInfo.userId)
-            assertEquals(tokenQueue.status.toString(), tokenInfo.status)
+            assertEquals(user.userId, tokenInfo.userId)
+            assertEquals(TokenQueueStatus.W.toString(), tokenInfo.status)
         }
 
         @Test
         fun `실패 (토큰이 존재하지 않는 경우)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
 
             //when
             val exception = assertThrows<CustomException> {
-                tokenFacade.getTokenInfo(token = tokenQueue.token + "-invalid")
+                tokenFacade.getTokenInfo(token = "$token-invalid")
             }
 
             //then
@@ -105,10 +118,10 @@ class TokenQueueFacadeTest {
         fun `성공 (정상 케이스)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
 
             //when
-            tokenFacade.verifyToken(token = tokenQueue.token)
+            tokenFacade.verifyToken(token = token)
 
             //then
         }
@@ -117,11 +130,11 @@ class TokenQueueFacadeTest {
         fun `실패 (토큰이 존재하지 않는 경우)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
 
             //when
             val exception = assertThrows<CustomException> {
-                tokenFacade.verifyToken(token = tokenQueue.token + "-invalid")
+                tokenFacade.verifyToken(token = "$token-invalid")
             }
 
             //then
@@ -151,10 +164,11 @@ class TokenQueueFacadeTest {
         fun `성공 (정상 케이스)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
 
             //when
-            tokenFacade.verifyTokenIsInProgress(token = tokenQueue.token)
+            tokenFacade.verifyTokenIsInProgress(token = token)
 
             //then
         }
@@ -163,11 +177,11 @@ class TokenQueueFacadeTest {
         fun `실패 (토큰이 존재하지 않는 경우)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
 
             //when
             val exception = assertThrows<CustomException> {
-                tokenFacade.verifyTokenIsInProgress(token = tokenQueue.token + "-invalid")
+                tokenFacade.verifyTokenIsInProgress(token = "$token-invalid")
             }
 
             //then
@@ -193,11 +207,11 @@ class TokenQueueFacadeTest {
         fun `실패 (토큰큐 상태가 Progress가 아닌 경우)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
 
             //when
             val exception = assertThrows<CustomException> {
-                tokenFacade.verifyTokenIsInProgress(token = tokenQueue.token)
+                tokenFacade.verifyTokenIsInProgress(token = token)
             }
 
             //then
