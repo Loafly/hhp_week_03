@@ -34,4 +34,8 @@ class TokenQueueService (private val tokenQueueRedisRepository: TokenQueueRedisR
             throw CustomException(ErrorCode.TOKEN_STATUS_IS_NOT_PROGRESS)
         }
     }
+
+    fun deleteActiveToken(token: String) {
+        tokenQueueRedisRepository.deleteActiveToken(token);
+    }
 }

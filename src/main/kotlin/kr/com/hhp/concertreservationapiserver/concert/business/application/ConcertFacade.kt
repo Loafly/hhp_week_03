@@ -69,6 +69,8 @@ class ConcertFacade(
             concertSeatId, userId, wallet.walletId!!
         )
 
+        tokenQueueService.deleteActiveToken(token)
+
         walletService.updateBalance(
             walletId = wallet.walletId!!,
             userId = userId,
