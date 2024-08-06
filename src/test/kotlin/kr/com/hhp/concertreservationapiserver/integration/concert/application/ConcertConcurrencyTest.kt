@@ -11,10 +11,7 @@ import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository
 import kr.com.hhp.concertreservationapiserver.concert.infra.repository.jpa.ConcertDetailJpaRepository
 import kr.com.hhp.concertreservationapiserver.concert.infra.repository.jpa.ConcertJpaRepository
 import kr.com.hhp.concertreservationapiserver.concert.infra.repository.jpa.ConcertSeatJpaRepository
-import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueEntity
-import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueStatus
-import kr.com.hhp.concertreservationapiserver.token.business.domain.repository.TokenQueueRepository
-import kr.com.hhp.concertreservationapiserver.token.infra.repository.jpa.TokenQueueJpaRepository
+import kr.com.hhp.concertreservationapiserver.token.infra.repository.redis.TokenQueueRedisRepository
 import kr.com.hhp.concertreservationapiserver.user.business.domain.entity.UserEntity
 import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
 import kr.com.hhp.concertreservationapiserver.user.infra.repository.jpa.UserJpaRepository
@@ -27,6 +24,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.redis.core.RedisTemplate
 import java.time.LocalDateTime
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
@@ -40,10 +38,10 @@ class ConcertConcurrencyTest {
     private lateinit var concertFacade: ConcertFacade
 
     @Autowired
-    lateinit var tokenQueueRepository: TokenQueueRepository
+    lateinit var tokenQueueRepository: TokenQueueRedisRepository
 
     @Autowired
-    lateinit var tokenQueueJpaRepository: TokenQueueJpaRepository
+    private lateinit var redisTemplate: RedisTemplate<String, String>
 
     @Autowired
     lateinit var userRepository: UserRepository
@@ -79,7 +77,10 @@ class ConcertConcurrencyTest {
     @AfterEach
     fun cleanup() {
         // 테스트 후 데이터 정리
-        tokenQueueJpaRepository.deleteAll()
+        redisTemplate.execute { connection ->
+            connection.serverCommands().flushAll()
+            null
+        }
         userJpaRepository.deleteAll()
         concertJpaRepository.deleteAll()
         concertDetailJpaRepository.deleteAll()
@@ -119,9 +120,10 @@ class ConcertConcurrencyTest {
                 executorService.submit {
                     try {
                         val user = userRepository.save(UserEntity())
-                        val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+                        val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+                        tokenQueueRepository.activateTokens(0)
                         concertFacade.reserveSeatToTemporary(
-                            token = tokenQueue.token, concertSeatId = concertSeat.concertSeatId!!
+                            token = token, concertSeatId = concertSeat.concertSeatId!!
                         )
                     } catch (e: Exception) {
                         errorCount.incrementAndGet()
@@ -174,9 +176,10 @@ class ConcertConcurrencyTest {
             for (i in 1..numberOfThreads) {
                 executorService.submit {
                     try {
-                        val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+                        val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+                        tokenQueueRepository.activateTokens(0)
                         concertFacade.payForTemporaryReservedSeatToConfirmedReservation(
-                            token = tokenQueue.token, concertSeatId = concertSeat.concertSeatId!!
+                            token = token, concertSeatId = concertSeat.concertSeatId!!
                         )
                     } catch (e: Exception) {
                         println("message : ${e.message}")

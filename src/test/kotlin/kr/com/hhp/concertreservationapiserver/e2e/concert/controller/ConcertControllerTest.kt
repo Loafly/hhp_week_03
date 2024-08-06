@@ -11,6 +11,7 @@ import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.Con
 import kr.com.hhp.concertreservationapiserver.token.business.domain.repository.TokenQueueRepository
 import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueEntity
 import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueStatus
+import kr.com.hhp.concertreservationapiserver.token.infra.repository.redis.TokenQueueRedisRepository
 import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
 import kr.com.hhp.concertreservationapiserver.user.business.domain.entity.UserEntity
 import kr.com.hhp.concertreservationapiserver.wallet.business.domain.repository.WalletRepository
@@ -40,7 +41,7 @@ class ConcertControllerTest {
     private lateinit var userRepository: UserRepository
 
     @Autowired
-    private lateinit var tokenQueueRepository: TokenQueueRepository
+    private lateinit var tokenQueueRepository: TokenQueueRedisRepository
 
     @Autowired
     private lateinit var concertRepository: ConcertRepository
@@ -61,7 +62,8 @@ class ConcertControllerTest {
         fun `성공 (정상 케이스)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -76,7 +78,7 @@ class ConcertControllerTest {
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/concerts/${concert.concertId}/details")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
                     .param("reservationDateTime", LocalDateTime.now().toString())
             )
 
@@ -92,8 +94,9 @@ class ConcertControllerTest {
         fun `실패 (토큰이 존재하지 않는 경우)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
-            val invalidToken = tokenQueue.token + "-notFound"
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
+            val invalidToken = "$token-notFound"
             val concert = concertRepository.save(ConcertEntity())
 
             // when
@@ -132,8 +135,8 @@ class ConcertControllerTest {
         fun `실패 (유효하지 않은 토큰인 경우)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.W))
-            val invalidToken = tokenQueue.token
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            val invalidToken = token
             val concert = concertRepository.save(ConcertEntity())
 
             // when
@@ -154,13 +157,14 @@ class ConcertControllerTest {
         fun `실패 (콘서트가 존재하지 않는 경우)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val concertId = 2L
 
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/concerts/${concertId}/details")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
                     .param("reservationDateTime", LocalDateTime.now().toString())
             )
 
@@ -179,7 +183,8 @@ class ConcertControllerTest {
         fun `성공 (정상 케이스)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -202,7 +207,7 @@ class ConcertControllerTest {
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/concerts/details/${concertDetail.concertDetailId}/seats")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
             )
 
             //then
@@ -218,8 +223,8 @@ class ConcertControllerTest {
         fun `실패 (토큰이 존재하지 않는 경우)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
-            val invalidToken = tokenQueue.token + "-notFound"
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            val invalidToken = "$token-notFound"
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -274,7 +279,7 @@ class ConcertControllerTest {
         fun `실패 (유효하지 않은 토큰인 경우)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.W))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -289,7 +294,7 @@ class ConcertControllerTest {
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/concerts/details/${concertDetail.concertDetailId}/seats")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
             )
 
             //then
@@ -303,14 +308,14 @@ class ConcertControllerTest {
         fun `실패 (콘서트 상세가 존재하지 않는 경우)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
-            val invalidToken = tokenQueue.token
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val concertDetailId = 1L
 
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/concerts/details/${concertDetailId}/seats")
-                    .header("token", invalidToken)
+                    .header("token", token)
             )
 
             //then
@@ -328,7 +333,8 @@ class ConcertControllerTest {
         fun `성공 (정상 케이스)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -351,7 +357,7 @@ class ConcertControllerTest {
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/concerts/details/seats/${concertSeat.concertSeatId}/reservation")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
             )
 
             //then
@@ -367,8 +373,8 @@ class ConcertControllerTest {
         fun `실패 (토큰이 존재하지 않는 경우)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
-            val invalidToken = tokenQueue.token + "-invalid"
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            val invalidToken = "$token-invalid"
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -440,7 +446,7 @@ class ConcertControllerTest {
         fun `실패 (유효하지 않은 토큰인 경우)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.W))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -463,7 +469,7 @@ class ConcertControllerTest {
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/concerts/details/seats/${concertSeat.concertSeatId}/reservation")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
             )
 
             //then
@@ -477,7 +483,8 @@ class ConcertControllerTest {
         fun `실패 (콘서트 좌석 임시 예약 기간이 아닌 경우 (시작 이전))`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -500,7 +507,7 @@ class ConcertControllerTest {
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/concerts/details/seats/${concertSeat.concertSeatId}/reservation")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
             )
 
             //then
@@ -514,7 +521,8 @@ class ConcertControllerTest {
         fun `실패 (콘서트 좌석 임시 예약 기간이 아닌 경우 (종료 이후))`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -537,7 +545,7 @@ class ConcertControllerTest {
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/concerts/details/seats/${concertSeat.concertSeatId}/reservation")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
             )
 
             //then
@@ -551,7 +559,8 @@ class ConcertControllerTest {
         fun `실패 (콘서트 좌석이 이미 예매된 경우)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -575,7 +584,7 @@ class ConcertControllerTest {
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/concerts/details/seats/${concertSeat.concertSeatId}/reservation")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
             )
 
             //then
@@ -589,12 +598,13 @@ class ConcertControllerTest {
         fun `실패 (콘서트 좌석이 없는 경우)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val concertSeatId = 1
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/concerts/details/seats/${concertSeatId}/reservation")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
             )
 
             //then
@@ -612,7 +622,8 @@ class ConcertControllerTest {
         fun `성공 (정상 케이스)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -642,7 +653,7 @@ class ConcertControllerTest {
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/concerts/details/seats/${concertSeat.concertSeatId}/payment")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
             )
 
             //then
@@ -653,8 +664,8 @@ class ConcertControllerTest {
         fun `실패 (토큰이 존재하지 않는 경우)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
-            val invalidToken = tokenQueue.token + "-invalid"
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            val invalidToken = "$token-invalid"
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -726,7 +737,7 @@ class ConcertControllerTest {
         fun `실패 (유효하지 않은 토큰인 경우)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.W))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -749,7 +760,7 @@ class ConcertControllerTest {
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/concerts/details/seats/${concertSeat.concertSeatId}/payment")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
             )
 
             //then
@@ -763,7 +774,8 @@ class ConcertControllerTest {
         fun `실패 (임시 예약된 좌석이 아닌 경우)`() {
             // given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -793,7 +805,7 @@ class ConcertControllerTest {
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/concerts/details/seats/${concertSeat.concertSeatId}/payment")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
             )
 
             //then
@@ -808,7 +820,8 @@ class ConcertControllerTest {
             // given
             val user = userRepository.save(UserEntity())
             val concertUser = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
                 ConcertDetailEntity(
@@ -838,7 +851,7 @@ class ConcertControllerTest {
             // when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.post("/api/concerts/details/seats/${concertSeat.concertSeatId}/payment")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
             )
 
             //then

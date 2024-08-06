@@ -3,6 +3,7 @@ package kr.com.hhp.concertreservationapiserver.token.business.application
 import kr.com.hhp.concertreservationapiserver.common.annotation.Facade
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
+import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueStatus
 import kr.com.hhp.concertreservationapiserver.token.business.domain.service.TokenQueueService
 import kr.com.hhp.concertreservationapiserver.user.business.domain.service.UserService
 import org.springframework.transaction.annotation.Transactional
@@ -16,22 +17,22 @@ class TokenFacade(private val userService: UserService,
     @Transactional
     fun createToken(userId: Long): TokenDto.TokenQueue {
         val user = userService.getByUserId(userId)
-        val tokenQueue = tokenQueueService.createByUserId(user.userId!!)
+        val token = tokenQueueService.createToken(user.userId!!)
 
-        return TokenDto.TokenQueue(tokenQueue.token)
+        return TokenDto.TokenQueue(token)
     }
 
     // 토큰 조회
     @Transactional(readOnly = true)
     fun getTokenInfo(token: String): TokenDto.TokenInfo {
-        val tokenQueue = tokenQueueService.getByToken(token)
-        val firstWaitingToken = tokenQueueService.getNullAbleFirstWaitingTokenQueue()
-        val remainingNumber = tokenQueueService.calculateRemainingNumber(firstWaitingToken, tokenQueue)
+        val userId = tokenQueueService.getUserIdByToken(token)
+        val rank = tokenQueueService.getRankByToken(token)
+        val activeToken = tokenQueueService.isActiveToken(token)
 
         return TokenDto.TokenInfo(
-            userId = tokenQueue.userId,
-            status = tokenQueue.status.toString(),
-            remainingNumber = remainingNumber
+            userId = userId,
+            status = if(activeToken) TokenQueueStatus.P.toString() else TokenQueueStatus.W.toString(),
+            remainingNumber = rank
         )
     }
 
@@ -43,7 +44,7 @@ class TokenFacade(private val userService: UserService,
             throw CustomException(ErrorCode.TOKEN_IS_NULL)
         }
 
-        tokenQueueService.getByToken(token)
+        tokenQueueService.getUserIdByToken(token)
     }
 
     @Transactional(readOnly = true)
@@ -53,7 +54,7 @@ class TokenFacade(private val userService: UserService,
             throw CustomException(ErrorCode.TOKEN_IS_NULL)
         }
 
-        val tokenQueue = tokenQueueService.getByToken(token)
-        tokenQueueService.throwExceptionIfStatusIsNotInProgress(tokenQueue)
+        tokenQueueService.getUserIdByToken(token)
+        tokenQueueService.throwExceptionIfStatusIsNotInProgress(token)
     }
 }

@@ -3,28 +3,28 @@ package kr.com.hhp.concertreservationapiserver.integration.concert.application
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.concert.business.application.ConcertFacade
-import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertDetailRepository
-import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertRepository
-import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertSeatRepository
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertDetailEntity
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertEntity
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertReservationStatus
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertSeatEntity
-import kr.com.hhp.concertreservationapiserver.token.business.domain.repository.TokenQueueRepository
-import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueEntity
-import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueStatus
-import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertDetailRepository
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertRepository
+import kr.com.hhp.concertreservationapiserver.concert.business.domain.repository.ConcertSeatRepository
+import kr.com.hhp.concertreservationapiserver.token.infra.repository.redis.TokenQueueRedisRepository
 import kr.com.hhp.concertreservationapiserver.user.business.domain.entity.UserEntity
-import kr.com.hhp.concertreservationapiserver.wallet.business.domain.repository.WalletRepository
+import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
 import kr.com.hhp.concertreservationapiserver.wallet.business.domain.entity.WalletEntity
+import kr.com.hhp.concertreservationapiserver.wallet.business.domain.repository.WalletRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
@@ -36,7 +36,10 @@ class ConcertFacadeTest {
     private lateinit var concertFacade: ConcertFacade
 
     @Autowired
-    lateinit var tokenQueueRepository: TokenQueueRepository
+    private lateinit var redisTemplate: RedisTemplate<String, String>
+
+    @Autowired
+    lateinit var tokenQueueRepository: TokenQueueRedisRepository
 
     @Autowired
     lateinit var userRepository: UserRepository
@@ -52,6 +55,14 @@ class ConcertFacadeTest {
 
     @Autowired
     lateinit var walletRepository: WalletRepository
+
+    @BeforeEach
+    fun setup() {
+        redisTemplate.execute { connection ->
+            connection.serverCommands().flushAll()
+            null
+        }
+    }
 
     @Nested
     @DisplayName("예약 가능 시간 리스트 조회")
@@ -162,7 +173,8 @@ class ConcertFacadeTest {
         fun `성공 (정상 케이스)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(userId = user.userId!!)
+            tokenQueueRepository.activateTokens(0)
 
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
@@ -180,7 +192,7 @@ class ConcertFacadeTest {
 
             //when
             val temporaryConcertSeat = concertFacade.reserveSeatToTemporary(
-                token = tokenQueue.token, concertSeatId = concertSeat.concertSeatId!!
+                token = token, concertSeatId = concertSeat.concertSeatId!!
             )
 
             //then
@@ -195,7 +207,7 @@ class ConcertFacadeTest {
         fun `실패 (토큰이 존재하지 않는 경우)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
 
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
@@ -214,7 +226,7 @@ class ConcertFacadeTest {
             //when
             val exception = assertThrows<CustomException> {
                 concertFacade.reserveSeatToTemporary(
-                    token = (tokenQueue.token + "-invalid"), concertSeatId = concertSeat.concertSeatId!!
+                    token = (token + "-invalid"), concertSeatId = concertSeat.concertSeatId!!
                 )
             }
 
@@ -227,13 +239,14 @@ class ConcertFacadeTest {
         fun `실패 (콘서트 좌석이 존재하지 않는 경우)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val concertSeatId = 0L
 
             //when
             val exception = assertThrows<CustomException> {
                 concertFacade.reserveSeatToTemporary(
-                    token = (tokenQueue.token), concertSeatId = concertSeatId
+                    token = token, concertSeatId = concertSeatId
                 )
             }
 
@@ -246,7 +259,8 @@ class ConcertFacadeTest {
         fun `실패 (콘서트 상세가 존재하지 않는 경우)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
 
             val concertDetailId = 0L
             val concertSeat = concertSeatRepository.save(
@@ -258,7 +272,7 @@ class ConcertFacadeTest {
             //when
             val exception = assertThrows<CustomException> {
                 concertFacade.reserveSeatToTemporary(
-                    token = (tokenQueue.token), concertSeatId = concertSeat.concertSeatId!!
+                    token = token, concertSeatId = concertSeat.concertSeatId!!
                 )
             }
 
@@ -271,7 +285,8 @@ class ConcertFacadeTest {
         fun `실패 (임시 예약 기간이 아닌 경우 (시작 이전))`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
 
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
@@ -290,7 +305,7 @@ class ConcertFacadeTest {
             //when
             val exception = assertThrows<CustomException> {
                 concertFacade.reserveSeatToTemporary(
-                    token = tokenQueue.token, concertSeatId = concertSeat.concertSeatId!!
+                    token = token, concertSeatId = concertSeat.concertSeatId!!
                 )
             }
 
@@ -303,7 +318,8 @@ class ConcertFacadeTest {
         fun `실패 (임시 예약 기간이 아닌 경우 (종료 이후))`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
 
             val concert = concertRepository.save(ConcertEntity())
             val concertDetail = concertDetailRepository.save(
@@ -322,7 +338,7 @@ class ConcertFacadeTest {
             //when
             val exception = assertThrows<CustomException> {
                 concertFacade.reserveSeatToTemporary(
-                    token = tokenQueue.token, concertSeatId = concertSeat.concertSeatId!!
+                    token = token, concertSeatId = concertSeat.concertSeatId!!
                 )
             }
 
@@ -341,7 +357,8 @@ class ConcertFacadeTest {
         fun `성공 (정상 케이스)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val wallet = walletRepository.save(WalletEntity(userId = user.userId!!, balance = 5000))
 
             val concert = concertRepository.save(ConcertEntity())
@@ -364,7 +381,7 @@ class ConcertFacadeTest {
 
             //when
             concertFacade.payForTemporaryReservedSeatToConfirmedReservation(
-                token = tokenQueue.token, concertSeatId = concertSeat.concertSeatId!!
+                token = token, concertSeatId = concertSeat.concertSeatId!!
             )
         }
 
@@ -374,7 +391,8 @@ class ConcertFacadeTest {
             val balance = 500
             val price = 1000
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             val wallet = walletRepository.save(WalletEntity(userId = user.userId!!, balance = balance))
 
             val concert = concertRepository.save(ConcertEntity())
@@ -398,7 +416,7 @@ class ConcertFacadeTest {
             //when
             val exception = assertThrows<CustomException> {
                 concertFacade.payForTemporaryReservedSeatToConfirmedReservation(
-                    token = tokenQueue.token, concertSeatId = concertSeat.concertSeatId!!
+                    token = token, concertSeatId = concertSeat.concertSeatId!!
                 )
             }
 
@@ -412,7 +430,8 @@ class ConcertFacadeTest {
         fun `실패 (토큰이 존재하지 않는 경우)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             walletRepository.save(WalletEntity(userId = user.userId!!))
 
             val concert = concertRepository.save(ConcertEntity())
@@ -436,7 +455,7 @@ class ConcertFacadeTest {
             //when
             val exception = assertThrows<CustomException> {
                 concertFacade.payForTemporaryReservedSeatToConfirmedReservation(
-                    token = tokenQueue.token + "-invalid", concertSeatId = concertSeat.concertSeatId!!
+                    token = "$token-invalid", concertSeatId = concertSeat.concertSeatId!!
                 )
             }
 
@@ -449,14 +468,15 @@ class ConcertFacadeTest {
         fun `실패 (콘서트 좌석이 존재하지 않는 경우)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             walletRepository.save(WalletEntity(userId = user.userId!!))
             val concertSeatId = 0L
 
             //when
             val exception = assertThrows<CustomException> {
                 concertFacade.payForTemporaryReservedSeatToConfirmedReservation(
-                    token = tokenQueue.token, concertSeatId = concertSeatId
+                    token = token, concertSeatId = concertSeatId
                 )
             }
 
@@ -469,7 +489,8 @@ class ConcertFacadeTest {
         fun `실패 (임시 예약된 좌석이 아닌 경우)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             walletRepository.save(WalletEntity(userId = user.userId!!))
 
             val concert = concertRepository.save(ConcertEntity())
@@ -493,7 +514,7 @@ class ConcertFacadeTest {
             //when
             val exception = assertThrows<CustomException> {
                 concertFacade.payForTemporaryReservedSeatToConfirmedReservation(
-                    token = tokenQueue.token, concertSeatId = concertSeat.concertSeatId!!
+                    token = token, concertSeatId = concertSeat.concertSeatId!!
                 )
             }
 
@@ -506,7 +527,8 @@ class ConcertFacadeTest {
         fun `실패 (임시 예약된 사용자가 아닌 경우)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!, status = TokenQueueStatus.P))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
             walletRepository.save(WalletEntity(userId = user.userId!!))
             val concertUser = userRepository.save(UserEntity())
 
@@ -531,7 +553,7 @@ class ConcertFacadeTest {
             //when
             val exception = assertThrows<CustomException> {
                 concertFacade.payForTemporaryReservedSeatToConfirmedReservation(
-                    token = tokenQueue.token, concertSeatId = concertSeat.concertSeatId!!
+                    token = token, concertSeatId = concertSeat.concertSeatId!!
                 )
             }
 
