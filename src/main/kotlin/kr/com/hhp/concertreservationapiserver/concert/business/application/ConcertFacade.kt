@@ -49,8 +49,8 @@ class ConcertFacade(
     // 좌석 임시 예약
     @DistributedSimpleLock(key = "'concertSeatId:' + #concertSeatId")
     fun reserveSeatToTemporary(token: String, concertSeatId: Long): ConcertDto.Seat {
-        val tokenQueue = tokenQueueService.getByToken(token)
-        val concertSeat = concertService.reserveSeatToTemporary(concertSeatId, tokenQueue.userId)
+        val userId = tokenQueueService.getUserIdByToken(token)
+        val concertSeat = concertService.reserveSeatToTemporary(concertSeatId, userId)
 
         return ConcertDto.Seat(
             concertSeat.concertSeatId!!,
@@ -63,15 +63,15 @@ class ConcertFacade(
     // 예약된 좌석 결제
     @Transactional
     fun payForTemporaryReservedSeatToConfirmedReservation(token: String, concertSeatId: Long) {
-        val tokenQueue = tokenQueueService.getByToken(token)
-        val wallet = walletService.getByUserId(userId = tokenQueue.userId)
+        val userId = tokenQueueService.getUserIdByToken(token)
+        val wallet = walletService.getByUserId(userId = userId)
         val concertSeat = concertService.payForTemporaryReservedSeatToConfirmedReservation(
-            concertSeatId, tokenQueue.userId, wallet.walletId!!
+            concertSeatId, userId, wallet.walletId!!
         )
 
         walletService.updateBalance(
             walletId = wallet.walletId!!,
-            userId = tokenQueue.userId,
+            userId = userId,
             amount = concertSeat.price,
             balanceType = WalletBalanceType.U
         )

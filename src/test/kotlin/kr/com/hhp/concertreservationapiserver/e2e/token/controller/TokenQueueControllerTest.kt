@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.token.business.domain.repository.TokenQueueRepository
 import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueEntity
+import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueStatus
+import kr.com.hhp.concertreservationapiserver.token.infra.repository.redis.TokenQueueRedisRepository
 import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
 import kr.com.hhp.concertreservationapiserver.user.business.domain.entity.UserEntity
 import org.junit.jupiter.api.Test
@@ -37,7 +39,7 @@ class TokenQueueControllerTest {
     private lateinit var userRepository: UserRepository
 
     @Autowired
-    private lateinit var tokenQueueRepository: TokenQueueRepository
+    private lateinit var tokenQueueRepository: TokenQueueRedisRepository
 
     @Nested
     @DisplayName("토큰 생성 조회")
@@ -92,27 +94,28 @@ class TokenQueueControllerTest {
         fun `성공 (정상 케이스)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!))
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            tokenQueueRepository.activateTokens(0)
 
             //when
             val perform = mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/tokens")
-                    .header("token", tokenQueue.token)
+                    .header("token", token)
             )
 
             //then
             perform
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$.userId").value(tokenQueue.userId))
-                .andExpect(jsonPath("$.status").value(tokenQueue.status.toString()))
+                .andExpect(jsonPath("$.userId").value(user.userId))
+                .andExpect(jsonPath("$.status").value(TokenQueueStatus.P.toString()))
         }
 
         @Test
         fun `실패 (토큰이 존재하지 않는 경우)`() {
             //given
             val user = userRepository.save(UserEntity())
-            val tokenQueue = tokenQueueRepository.save(TokenQueueEntity(userId = user.userId!!))
-            val invalidToken = tokenQueue.token + "-notFound"
+            val token = tokenQueueRepository.addWaitingToken(user.userId!!)
+            val invalidToken = "$token-notFound"
 
             //when
             val perform = mockMvc.perform(
