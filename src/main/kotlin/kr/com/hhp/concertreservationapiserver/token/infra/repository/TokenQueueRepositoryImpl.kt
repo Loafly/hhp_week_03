@@ -1,34 +1,33 @@
 package kr.com.hhp.concertreservationapiserver.token.infra.repository
 
 import kr.com.hhp.concertreservationapiserver.token.business.domain.repository.TokenQueueRepository
-import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueEntity
-import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueStatus
-import kr.com.hhp.concertreservationapiserver.token.infra.repository.jpa.TokenQueueJpaRepository
+import kr.com.hhp.concertreservationapiserver.token.infra.repository.redis.TokenQueueRedisRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-class TokenQueueRepositoryImpl(private val tokenQueueJpaRepository: TokenQueueJpaRepository): TokenQueueRepository {
-    override fun save(tokenQueue: TokenQueueEntity): TokenQueueEntity {
-        return tokenQueueJpaRepository.save(tokenQueue)
+class TokenQueueRepositoryImpl(private val tokenQueueRedisRepository: TokenQueueRedisRepository): TokenQueueRepository {
+    override fun addWaitingToken(userId: Long): String {
+        return tokenQueueRedisRepository.addWaitingToken(userId)
     }
 
-    override fun findByToken(token: String): TokenQueueEntity? {
-        return tokenQueueJpaRepository.findByToken(token)
+    override fun getWaitingPosition(token: String): Long {
+        return tokenQueueRedisRepository.getWaitingPosition(token)
     }
 
-    override fun findFirstByStatusOrderByTokenQueueId(tokenQueueStatus: TokenQueueStatus): TokenQueueEntity? {
-        return tokenQueueJpaRepository.findFirstByStatusOrderByTokenQueueId(tokenQueueStatus)
+    override fun getUserIdByToken(token: String): Long? {
+        return tokenQueueRedisRepository.getUserIdByToken(token)
     }
 
-    override fun findAllByStatus(tokenStatus: TokenQueueStatus): List<TokenQueueEntity> {
-        return tokenQueueJpaRepository.findAllByStatus(tokenStatus)
+    override fun activateTokens(n: Long): Long {
+        return tokenQueueRedisRepository.activateTokens(n)
     }
 
-    override fun saveAll(tokenQueues: List<TokenQueueEntity>): List<TokenQueueEntity> {
-        return tokenQueueJpaRepository.saveAll(tokenQueues)
+    override fun isActiveToken(token: String): Boolean {
+        return tokenQueueRedisRepository.isActiveToken(token)
     }
 
-    override fun findAllByTokenQueueIdIn(tokenQueueIds: List<Long>): List<TokenQueueEntity> {
-        return tokenQueueJpaRepository.findAllByTokenQueueIdIn(tokenQueueIds)
+    override fun deleteActiveToken(token: String) {
+        tokenQueueRedisRepository.deleteActiveToken(token)
     }
+
 }

@@ -3,17 +3,16 @@ package kr.com.hhp.concertreservationapiserver.integration.token.application
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
 import kr.com.hhp.concertreservationapiserver.token.business.application.TokenFacade
-import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueEntity
 import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueStatus
 import kr.com.hhp.concertreservationapiserver.token.infra.repository.redis.TokenQueueRedisRepository
-import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
 import kr.com.hhp.concertreservationapiserver.user.business.domain.entity.UserEntity
-import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
+import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest

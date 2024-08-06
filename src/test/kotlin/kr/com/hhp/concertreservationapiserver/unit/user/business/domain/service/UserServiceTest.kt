@@ -1,4 +1,4 @@
-package kr.com.hhp.concertreservationapiserver.unit.user.application
+package kr.com.hhp.concertreservationapiserver.unit.user.business.domain.service
 
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.CustomException
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode

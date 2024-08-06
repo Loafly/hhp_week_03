@@ -2,17 +2,13 @@ package kr.com.hhp.concertreservationapiserver.e2e.token.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import kr.com.hhp.concertreservationapiserver.common.domain.exception.ErrorCode
-import kr.com.hhp.concertreservationapiserver.token.business.domain.repository.TokenQueueRepository
-import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueEntity
 import kr.com.hhp.concertreservationapiserver.token.business.domain.entity.TokenQueueStatus
 import kr.com.hhp.concertreservationapiserver.token.infra.repository.redis.TokenQueueRedisRepository
-import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
 import kr.com.hhp.concertreservationapiserver.user.business.domain.entity.UserEntity
-import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
+import kr.com.hhp.concertreservationapiserver.user.business.domain.repository.UserRepository
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -22,7 +18,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 @Transactional
 @SpringBootTest
