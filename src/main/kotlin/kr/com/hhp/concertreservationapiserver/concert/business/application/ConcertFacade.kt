@@ -69,13 +69,14 @@ class ConcertFacade(
             concertSeatId, userId, wallet.walletId!!
         )
 
-        tokenQueueService.deleteActiveToken(token)
-
         walletService.updateBalance(
             walletId = wallet.walletId!!,
             userId = userId,
             amount = concertSeat.price,
             balanceType = WalletBalanceType.U
         )
+
+        //토큰 제거
+        tokenQueueService.deleteActiveToken(token)
     }
 }

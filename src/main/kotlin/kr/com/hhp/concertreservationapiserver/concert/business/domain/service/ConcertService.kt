@@ -74,18 +74,19 @@ class ConcertService(
     //예약된 좌석 결제
     fun payForTemporaryReservedSeatToConfirmedReservation(concertSeatId: Long, userId: Long, walletId: Long): ConcertSeatEntity {
         val concertSeat = concertSeatRepository.findByConcertSeatId(concertSeatId) ?: throw CustomException(ErrorCode.CONCERT_SEAT_NOT_FOUND)
+        val concertDetail = concertDetailRepository.findByConcertDetailId(concertSeat.concertDetailId) ?: throw CustomException(ErrorCode.CONCERT_DETAIL_NOT_FOUND)
+        concertDetail.throwExceptionIfNotReservationPeriod();
         concertSeat.updateReservationStatusC(userId)
 
         val concertReservationHistory = ConcertReservationHistoryEntity(
             concertSeatId = concertSeatId, status = concertSeat.reservationStatus
         )
 
-        concertReservationHistoryRepository.save(concertReservationHistory)
-
         val concertSeatPaymentHistory = ConcertSeatPaymentHistoryEntity(
             concertSeatId = concertSeatId, price = concertSeat.price, walletId = walletId
         )
 
+        concertReservationHistoryRepository.save(concertReservationHistory)
         concertSeatPaymentHistoryRepository.save(concertSeatPaymentHistory)
 
         return concertSeatRepository.save(concertSeat)
