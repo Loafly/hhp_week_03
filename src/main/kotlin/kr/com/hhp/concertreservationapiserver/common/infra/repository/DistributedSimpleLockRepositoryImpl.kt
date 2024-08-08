@@ -1,4 +1,4 @@
-package kr.com.hhp.concertreservationapiserver.common.infra
+package kr.com.hhp.concertreservationapiserver.common.infra.repository
 
 import kr.com.hhp.concertreservationapiserver.common.domain.repository.DistributedLockRepository
 import org.springframework.data.redis.core.RedisTemplate
