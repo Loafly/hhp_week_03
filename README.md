@@ -471,3 +471,126 @@ sequenceDiagram
 - ~~(GET) 토큰 정보 조회 `(/api/tokens)`~~
   - 이유
     - 토큰 정보를 RDB → Redis로 변경 예정이기에, 해당 내용은 캐시적용하지 않는다.
+
+
+
+
+
+# DB Index 적용
+
+> Index가 걸려있지 않으며, 자주 사용하거나 DB 조회가 오래걸리는 쿼리에 대해 index 적용 전/후 상황 속도 비교
+
+# 쿼리문
+### 콘서트
+
+- 예약 가능한 콘서트 상세 정보 조회
+
+    ```sql
+    select *
+    from concert_detail
+    where concert_detail.concert_id = ? 
+    	and remainingSeatCount != 0
+    	and reservationStartDateTime >= ?
+    	and reservationEndDateTime <= ?
+    ```
+
+- 예약 가능한 좌석 조회
+
+    ```sql
+    select *
+    from concert_seat
+    where concert_seat.concert_detail_id = ?
+    	and concert_seat.reservation_status = ?
+    ```
+
+- 임시 예약 기간이 종료된 좌석 조회
+
+    ```sql
+    select *
+    from concert_seat
+    where concert_seat.reservation_status = ?
+    	and concert_seat.updated_at >= ?
+    ```
+
+
+### 지갑
+
+- 지갑 조회 (userId)
+
+    ```sql
+    select *
+    from wallet
+    where wallet.user_id = ?
+    ```
+
+
+# 인덱스 적용 전/후 속도 비교
+
+## **비교 조건**
+
+- `concert` 데이터 수 : 20,000개
+- `concert_detail` 데이터 수 : `concert` * 300 → 총 6,000,000개
+  - 예약기간이 지난 데이터 100개
+  - 예약가능한 데이터 : 100개
+  - 예약기간 이전인 데이터 : 100개
+- `concert_seat` 데이터 수 : `concert` * `concert_detail` * 50 → 총 30,000,000개
+  - 콘서트 상세 정보 당 50개의 좌석 지정
+- `user` 데이터 수 : 20,000,000 개
+- `wallet` 데이터 수 : 20,000,000 개
+
+### 인덱스 적용 조건
+
+- 평균 실행 속도가 500ms 이상인 경우
+- 해당 컬럼의 카디널리티가 높은 경우
+  - 전체 행의 비해 중복도가 5% 미만인 경우
+- 해당 컬럼의 변경의 빈도가 적은 경우
+  - 대부분 PK형태의 id값이기에 삽입 이외의 변경은 발생하지 않음
+
+## 쿼리 실행 속도 비교
+
+- 예약 가능한 콘서트 상세 정보 조회
+  - 인덱스 적용 이전
+    - 조회 속도 : 1s 74ms
+    - 실행 계획
+
+      ![Untitled](https://github.com/user-attachments/assets/ef9ee398-c7f4-4cab-a090-561dcacfb3da)
+
+  - 인덱스 적용 이후
+    - 조회 속도 : 55ms
+    - 실행 계획
+
+      ![Untitled (1)](https://github.com/user-attachments/assets/16df7f50-fdbb-4fa5-89a9-0c1bc7c69447)
+
+- 예약 가능한 좌석 조회
+  - 인덱스 적용 이전
+    - 조회 속도 : 95s
+    - 실행 계획
+
+      ![Untitled (2)](https://github.com/user-attachments/assets/a41dd285-17b1-4aaf-9663-378fff863ce1)
+
+  - 인덱스 적용 이후
+    - 조회 속도 : 59ms
+    - 실행 계획
+
+      ![Untitled (3)](https://github.com/user-attachments/assets/4682f587-4957-4991-9ba6-ad38e3884627)
+
+- ~~임시 예약 기간이 종료된 좌석 조회~~
+  - 인덱스 적용 이전
+    - 조회 속도 : 59ms
+    - 실행 계획
+
+      ![Untitled (4)](https://github.com/user-attachments/assets/2b5d2960-8a32-46d7-8751-55ce791b50d7)
+
+- 지갑 조회 (userId)
+  - user_id가 UK로 기본적으로 index설정이 되어있음
+  - 인덱스 적용 이전
+    - 조회 속도 : 2s 131ms
+    - 실행 계획
+
+      ![Untitled (5)](https://github.com/user-attachments/assets/736419e6-3509-41ce-9ece-254f62b051a5)
+
+  - 인덱스 적용 이후
+    - 조회 속도 : 34ms
+    - 실행 계획
+
+      ![Untitled (6)](https://github.com/user-attachments/assets/7ee59377-4dc0-45ab-a57e-0f028721ee92)
