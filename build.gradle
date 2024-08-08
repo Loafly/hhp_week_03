@@ -37,6 +37,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
+    implementation("com.slack.api:bolt:1.18.0")
+    implementation("com.slack.api:bolt-servlet:1.18.0")
+    implementation("com.slack.api:bolt-jetty:1.18.0")
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'

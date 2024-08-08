@@ -2,6 +2,9 @@ package kr.com.hhp.concertreservationapiserver.concert.business.application
 
 import kr.com.hhp.concertreservationapiserver.common.annotation.DistributedSimpleLock
 import kr.com.hhp.concertreservationapiserver.common.annotation.Facade
+import kr.com.hhp.concertreservationapiserver.common.domain.event.SendMessageChannel
+import kr.com.hhp.concertreservationapiserver.common.domain.event.SendMessageEvent
+import kr.com.hhp.concertreservationapiserver.common.domain.event.SendMessageEventPublisher
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertReservationStatus
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.event.ConcertEventPublisher
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.service.ConcertService
@@ -17,6 +20,7 @@ class ConcertFacade(
     private val walletService: WalletService,
     private val concertService: ConcertService,
     private val concertEventPublisher: ConcertEventPublisher,
+    private val sendMessageEventPublisher: SendMessageEventPublisher
 ) {
 
     // 예약 가능 날짜 조회
@@ -58,6 +62,12 @@ class ConcertFacade(
         val concertSeat = concertService.reserveSeatToTemporary(concertSeatId, userId)
 
         concertEventPublisher.publishReservationEvent(concertSeatId = concertSeat.concertSeatId!!)
+        sendMessageEventPublisher.publishEvent(
+            SendMessageEvent(
+                channel = SendMessageChannel.CONCERT_RESERVATION,
+                message = "콘서트 좌석 임시 예약 userId : $userId concertSeatId : $concertSeatId"
+            )
+        )
 
         return ConcertDto.Seat(
             concertSeat.concertSeatId!!,
@@ -95,6 +105,13 @@ class ConcertFacade(
             walletId = wallet.walletId!!,
             userId = userId,
             price = concertSeat.price
+        )
+
+        sendMessageEventPublisher.publishEvent(
+            SendMessageEvent(
+                channel = SendMessageChannel.CONCERT_PAYMENT,
+                message = "콘서트 좌석 결제 완료 userId : $userId concertSeatId : $concertSeatId"
+            )
         )
     }
 
