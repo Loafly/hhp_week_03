@@ -18,7 +18,7 @@ class ConcertDetailEntity (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var concertDetailId: Long? = null,
 
-    @Column(name = "concert_id", nullable = false, unique = true)
+    @Column(name = "concert_id", nullable = false)
     val concertId: Long,
 
     @Column(name = "total_seat_count", nullable = false)
