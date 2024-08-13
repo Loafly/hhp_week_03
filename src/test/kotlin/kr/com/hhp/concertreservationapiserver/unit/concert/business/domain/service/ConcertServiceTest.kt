@@ -242,14 +242,9 @@ class ConcertServiceTest {
                 userId = userId,
                 reservationStatus = ConcertReservationStatus.T
             )
-            val expectedConcertReservationHistory = ConcertReservationHistoryEntity(
-                concertSeatId = concertSeatId,
-                status = ConcertReservationStatus.T
-            )
 
             given(concertDetailRepository.save(any())).willReturn(expectedUpdatedConcertDetail)
             given(concertSeatRepository.save(any())).willReturn(expectedUpdatedConcertSeat)
-            given(concertReservationHistoryRepository.save(any())).willReturn(expectedConcertReservationHistory)
 
             //when
             val concertSeat =
@@ -261,7 +256,6 @@ class ConcertServiceTest {
 
             then(concertDetailRepository).should().save(any())
             then(concertSeatRepository).should().save(any())
-            then(concertReservationHistoryRepository).should().save(any())
 
             assertEquals(expectedUpdatedConcertSeat, concertSeat)
         }
@@ -411,14 +405,6 @@ class ConcertServiceTest {
             given(concertSeatRepository.findByConcertSeatId(concertSeatId)).willReturn(expectedConcertSeat)
             given(concertDetailRepository.findByConcertDetailId(concertDetailId)).willReturn(expectedConcertDetail)
 
-
-            val expectedConcertReservationHistory = ConcertReservationHistoryEntity(
-                concertSeatId = concertSeatId, status = ConcertReservationStatus.C
-            )
-            val expectedConcertSeatPaymentHistory = ConcertSeatPaymentHistoryEntity(
-                concertSeatId = concertSeatId, price = expectedConcertSeat.price, walletId = walletId
-            )
-
             val expectedUpdatedConcertSeat = ConcertSeatEntity(
                 concertSeatId = expectedConcertSeat.concertSeatId,
                 userId = expectedConcertSeat.userId,
@@ -428,8 +414,6 @@ class ConcertServiceTest {
                 reservationStatus = ConcertReservationStatus.C
             )
 
-            given(concertReservationHistoryRepository.save(any())).willReturn(expectedConcertReservationHistory)
-            given(concertSeatPaymentHistoryRepository.save(any())).willReturn(expectedConcertSeatPaymentHistory)
             given(concertSeatRepository.save(any())).willReturn(expectedUpdatedConcertSeat)
 
             //when
@@ -440,8 +424,6 @@ class ConcertServiceTest {
             //then
             then(concertSeatRepository).should().findByConcertSeatId(concertSeatId)
             then(concertDetailRepository).should().findByConcertDetailId(concertDetailId)
-            then(concertReservationHistoryRepository).should().save(any())
-            then(concertSeatPaymentHistoryRepository).should().save(any())
             then(concertSeatRepository).should().save(any())
 
             assertEquals(expectedUpdatedConcertSeat, concertSeat)
