@@ -61,14 +61,17 @@ class ConcertService(
         concertSeat.updateReservationStatusT(userId)
         concertDetail.reserveSeat()
 
+        concertDetailRepository.save(concertDetail)
+        return concertSeatRepository.save(concertSeat)
+    }
+
+    fun createReserveHistory(concertSeatId: Long, reservationStatus: ConcertReservationStatus) {
         val concertReservationHistory = ConcertReservationHistoryEntity(
             concertSeatId = concertSeatId,
-            status = concertSeat.reservationStatus
+            status = reservationStatus
         )
 
-        concertDetailRepository.save(concertDetail)
         concertReservationHistoryRepository.save(concertReservationHistory)
-        return concertSeatRepository.save(concertSeat)
     }
 
     //예약된 좌석 결제
@@ -78,19 +81,17 @@ class ConcertService(
         concertDetail.throwExceptionIfNotReservationPeriod();
         concertSeat.updateReservationStatusC(userId)
 
-        val concertReservationHistory = ConcertReservationHistoryEntity(
-            concertSeatId = concertSeatId, status = concertSeat.reservationStatus
-        )
-
-        val concertSeatPaymentHistory = ConcertSeatPaymentHistoryEntity(
-            concertSeatId = concertSeatId, price = concertSeat.price, walletId = walletId
-        )
-
-        concertReservationHistoryRepository.save(concertReservationHistory)
-        concertSeatPaymentHistoryRepository.save(concertSeatPaymentHistory)
-
         return concertSeatRepository.save(concertSeat)
     }
+
+    fun createSeatPaymentHistory(concertSeatId: Long, price: Int, walletId: Long) {
+        val concertSeatPaymentHistory = ConcertSeatPaymentHistoryEntity(
+            concertSeatId = concertSeatId, price = price, walletId = walletId
+        )
+
+        concertSeatPaymentHistoryRepository.save(concertSeatPaymentHistory)
+    }
+
 
     // 콘서트 예약 시간 초과시 만료 처리
     fun releaseExpiredReservations() {
