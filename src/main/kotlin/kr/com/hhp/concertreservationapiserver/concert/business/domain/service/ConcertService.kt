@@ -41,7 +41,7 @@ class ConcertService(
 
     // 예약 가능 좌석 조회
     fun getAllAvailableReservationSeat(concertDetailId: Long): List<ConcertSeatEntity> {
-        val concertDetail = concertDetailRepository.findByConcertDetailId(concertDetailId)
+        concertDetailRepository.findByConcertDetailId(concertDetailId)
             ?: throw CustomException(ErrorCode.CONCERT_DETAIL_NOT_FOUND)
 
         return concertSeatRepository.findAllByConcertDetailIdAndReservationStatus(
