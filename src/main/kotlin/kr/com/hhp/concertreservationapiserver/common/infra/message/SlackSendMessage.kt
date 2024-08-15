@@ -1,9 +1,9 @@
-package kr.com.hhp.concertreservationapiserver.common.infra.slack
+package kr.com.hhp.concertreservationapiserver.common.infra.message
 
 import com.slack.api.Slack
 import com.slack.api.methods.SlackApiException
 import com.slack.api.methods.request.chat.ChatPostMessageRequest
-import kr.com.hhp.concertreservationapiserver.common.domain.SendMessage
+import kr.com.hhp.concertreservationapiserver.common.domain.message.SendMessage
 import kr.com.hhp.concertreservationapiserver.common.domain.event.SendMessageChannel
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -13,7 +13,7 @@ import java.io.IOException
 @Component
 class SlackSendMessage(@Value("\${slack.token}") private val token: String) : SendMessage {
 
-    private val log = LoggerFactory.getLogger(SlackSendMessage::class.java)
+    private val log = LoggerFactory.getLogger(this::class.java)
 
     override fun send(channel: SendMessageChannel, message: String) {
         val channelAddress = when (channel) {
