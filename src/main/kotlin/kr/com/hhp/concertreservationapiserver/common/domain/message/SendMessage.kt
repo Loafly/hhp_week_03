@@ -1,4 +1,4 @@
-package kr.com.hhp.concertreservationapiserver.common.domain
+package kr.com.hhp.concertreservationapiserver.common.domain.message
 
 import kr.com.hhp.concertreservationapiserver.common.domain.event.SendMessageChannel
 
