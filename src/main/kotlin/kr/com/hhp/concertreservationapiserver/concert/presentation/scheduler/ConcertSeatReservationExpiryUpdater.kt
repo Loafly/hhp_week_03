@@ -8,10 +8,9 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
 @Component
-class ConcertSeatReservationExpiryUpdater(private val concertService: ConcertService,
-) {
+class ConcertSeatReservationExpiryUpdater(private val concertService: ConcertService) {
 
-    private val logger: Logger = LoggerFactory.getLogger(ConcertSeatReservationExpiryUpdater::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
     // 5분마다 임시 예약된 좌석 확인 후 만료된 경우 임시 예약 취소
     @Transactional

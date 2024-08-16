@@ -39,8 +39,11 @@ enum class ErrorCode(val httpStatus: HttpStatus, val code: String, val message: 
 
 
         //404
-    WALLET_NOT_FOUND(HttpStatus.NOT_FOUND, "W-N-0001", "지갑이 존재하지 않습니다.");
+    WALLET_NOT_FOUND(HttpStatus.NOT_FOUND, "W-N-0001", "지갑이 존재하지 않습니다."),
 
+
+    // 아웃박스
+    OUT_BOX_NOT_FOUNT(HttpStatus.NOT_FOUND, "O-N-0001", "OutBox를 찾을 수 없습니다.");
     override fun toString(): String {
         return this.message
     }
