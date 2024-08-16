@@ -21,14 +21,21 @@ class OutBoxEntity (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var outBoxId: Long? = null,
 
+    @Column(name = "event_type")
+    val eventType: String,
+
     @Column(name = "payload")
     val payload: String,
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    val eventStatus: EventStatus,
+    var eventStatus: EventStatus,
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false, columnDefinition = "timestamp")
     var updatedAt: LocalDateTime = LocalDateTime.now(),
-)
+) {
+    fun updateStatus(eventStatus: EventStatus) {
+        this.eventStatus = eventStatus;
+    }
+}

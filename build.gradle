@@ -4,6 +4,8 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.24'
     id 'org.jetbrains.kotlin.jvm' version '1.9.24'
     id 'org.jetbrains.kotlin.plugin.spring' version '1.9.24'
+
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
 }
 
 group = 'kr.com.hhp'
@@ -30,6 +32,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
 
     // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.5.0'

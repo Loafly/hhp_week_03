@@ -5,6 +5,7 @@ import kr.com.hhp.concertreservationapiserver.common.annotation.Facade
 import kr.com.hhp.concertreservationapiserver.common.domain.event.SendMessageChannel
 import kr.com.hhp.concertreservationapiserver.common.domain.event.SendMessageEvent
 import kr.com.hhp.concertreservationapiserver.common.domain.event.SendMessageEventPublisher
+import kr.com.hhp.concertreservationapiserver.common.domain.service.OutBoxService
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.entity.ConcertReservationStatus
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.event.ConcertEventPublisher
 import kr.com.hhp.concertreservationapiserver.concert.business.domain.service.ConcertService
